@@ -3,8 +3,9 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "queue_buf.h"
+#include "../utils/queue_buf.h"
 
+#define DEBUG
 #define N_ELEMS 8
 
 void main(int argc, char **argv) {
