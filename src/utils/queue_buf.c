@@ -53,11 +53,11 @@ int qb_dequeue(struct queue_buf *q) {
         exit(1);
     }
 #endif
-    return q->elems[q->ptr++];
+    return q->elems[q->first++];
 }
 
 int qb_empty(struct queue_buf *q) {
-    return (q->n_elems == q->ptr)? TRUE : FALSE;
+    return (q->n_elems == q->first)? TRUE : FALSE;
 }
       
 int qb_full(struct queue_buf *q) {
