@@ -26,12 +26,12 @@ void main(int argc, char **argv) {
     
     fd = open("test_file", O_RDWR);
 
-    qb = queue_buf_new(N_ELEMS);
+    qb = qb_new(N_ELEMS);
 
-    refill_queue_buf(qb, fd);
+    qb_refill(qb, fd);
 
     for (i = 0; i < N_ELEMS; i++) {
-        printf("Extracted %d\n", dequeue(qb));
+        printf("Extracted %d\n", qb_dequeue(qb));
     }
 
 }
