@@ -1,3 +1,13 @@
+#ifndef _PRIORITY_QUEQUE_
+#define _PRIORITY_QUEQUE_
+
+#ifndef TRUE
+#define TRUE 1
+#endif
+#ifndef FALSE
+#define FALSE 0
+#endif
+
 struct pair {
     int i1, i2;
 };
@@ -19,6 +29,19 @@ Returns:
     the newly created priority_queue structure.
 */
 struct priority_queue *pq_new(int size);
+
+/*
+   Tests a priority queue for emptiness
+
+Params:
+    p(IN) - the priority queue to test for emptiness.
+
+Returns:
+    TRUE if the priority_queue was empty, FALSE if it
+    wasn't.
+*/
+
+int empty(struct priority_queue *p);
 
 /*
     Inserts an element in the priority queue, along with an identifier
@@ -59,4 +82,4 @@ Params:
     p(IN/OUT) - the priority queue to be freed.
 */
 void pq_free(struct priority_queue *p);
-
+#endif

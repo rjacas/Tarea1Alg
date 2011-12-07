@@ -1,7 +1,7 @@
+#define DEBUG
 #include <stdio.h>
 #include <stdlib.h>
 #include "../utils/priority_queue.h"
-#define DEBUG
 
 void main(int argc, char **argv) {
     struct priority_queue *p;

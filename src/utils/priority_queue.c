@@ -11,6 +11,10 @@ struct priority_queue *pq_new(int size) {
     return p;
 }
 
+int empty(struct priority_queue *p) {
+    return ((p->elems[0].id1 == 0)? TRUE : FALSE);
+}
+
 void pq_insert(struct priority_queue *pq, int new_elem, int origin) {
     int i;
     struct pair tmp;

@@ -1,6 +1,6 @@
-empty en priority
-enqueue en queque
-full en queque
+empty en priority - Done
+enqueue en queque - Done, pero por ahora hay problemas de compatibilidad entre enqueue+flush y dequeue
+full en queque - Done, pero no deberia ser necesario.
 quicksort para los ordenamientos basicos
 flush para tirar al archivo
 

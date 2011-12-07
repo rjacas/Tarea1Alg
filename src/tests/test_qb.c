@@ -1,3 +1,4 @@
+#define DEBUG
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -5,7 +6,6 @@
 #include <stdlib.h>
 #include "../utils/queue_buf.h"
 
-#define DEBUG
 #define N_ELEMS 8
 
 void main(int argc, char **argv) {
@@ -13,7 +13,7 @@ void main(int argc, char **argv) {
     int foo[N_ELEMS];
     struct queue_buf *qb;
 
-    fd = open("test_file", O_WRONLY | O_CREAT);
+    fd = open("test_file", O_RDWR | O_CREAT, S_IRWXU | S_IRGRP | S_IROTH);
   
     for (i = 0; i < N_ELEMS; i++) {
         foo[i] = rand();
@@ -24,7 +24,7 @@ void main(int argc, char **argv) {
 
     close(fd);
     
-    fd = open("test_file", O_RDONLY);
+    fd = open("test_file", O_RDWR);
 
     qb = queue_buf_new(N_ELEMS);
 

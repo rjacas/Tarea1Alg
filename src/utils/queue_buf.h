@@ -1,3 +1,5 @@
+#ifndef _QUEQUE_BUF_
+#define _QUEQUE_BUF_
 #ifndef TRUE
 #define TRUE 1
 #endif
@@ -6,10 +8,21 @@
 #endif
 
 struct queue_buf {
+    /* The data contained in the queue_buf */
     int *elems;
+
+    /* The amount of data, in integers, that the queue_buf
+       can hold */
     int size;
+
+    /* The current number of elements in the queue_buf */
     int n_elems;
-    int ptr;
+
+    /*Position of the first non-null element in the queue_buf */
+    int first;
+
+     /*Position of the first empty space (in other words, last_elem + 1) */
+    int first_empty_space;
 };
 
 /*
@@ -26,7 +39,8 @@ struct queue_buf *queue_buf_new(int size);
 
 /*
    Refills a queue_buf structure with integers extracted
-   from fd.
+   from a file.It assumes the queue_buf is empty: if called
+   on a non-empty queue_buf, the old data will be deleted.
 
 Params:
     q(IN) - the queue_buf structure to be refilled.
@@ -38,10 +52,44 @@ Returns:
 */
 int refill_queue_buf(struct queue_buf *q, int fd);
 
+/*
+   Writes the content of a queue_buf to a file.
+   Only the elements present in the queue buf will be written
+   (therefore, for example, flushing an empty queue_buf will
+   do nothing). After calling this function, the queue_buf should
+   be treated as empty. Currently incompatible with dequeue().
+
+Params:
+    q(IN) - the queue_buf structure to be flushed.
+    fd(IN) - the file descriptor for the file to be written to.
+    Data will be written at the file descriptors' current position.
+
+Returns:
+    The number of bytes actually written to the file. In case of error, 
+    -1 will be returned and errno will be changed to an appropiate
+    value (same behavior as that of write(): see man 2 write)
+*/
+int flush(struct queue_buf *q, int fd);
+
+/*
+   Enqueues an integer at the end of the queue_buf.
+   Unspecified behavior will happen if this function
+   is called on a full queue_buf. Currently incompatible
+   with dequeue().
+
+Params:
+    q(IN) - the queue_buf where the element will be
+    enqueued.
+
+    new_elem(IN) - the element to be enqueued.
+
+*/
+void enqueue(struct queue_buf *q, int new_elem);
+
 /* 
    Dequeues the first element from the queue_buf. Unspecified
-   behavior is to happen if there aren't any elements in the
-   queue_buf.
+   behavior is to happen if there aren't any elements in the 
+   queue_buf. Currently incompatible with enqueue() and flush().
 
 Params:
     q(IN) - the queue_buf to dequeue from.
@@ -57,9 +105,23 @@ int dequeue(struct queue_buf *q);
 
 Params:
     q(IN) - the queue_buf to check for emptiness.
-
+ 
 Returns:
-    true if the queue_buf is empty; false if it isn't.
+    TRUE if the queue_buf is empty; FALSE if it isn't.
 */
  
 int empty(struct queue_buf *q);
+
+/*
+   Checks if a queue_buf is full.
+
+Params:
+    q(IN) - the queue_buf to check for fullness.
+
+Returns:
+    TRUE if the queue_buf is full; FALSE if it isn't.
+*/
+ 
+int full(struct queue_buf *q);
+
+#endif
