@@ -4,7 +4,10 @@ queue_buf* bufs[k];
 queue_buf* exit;
 priority_queue* heap;
 
-void m_mergesort(int in){
+void mergesort(int fd, int size, int pos);
+void quickaux(int begin, int end,int *buf);
+
+void m_mergesort(int fd){
   int i;
   heap = pq_new(k);
   for( i = 0; i < k; i++){
@@ -35,7 +38,7 @@ void mergesort(int fd, int size, int pos){
         int x;
         int y;
         pq_extract(heap,&x, &y);
-        if(!empty(buf[y])
+        if(!empty(bufs[y])
           pq_insert(heap, dequeue(bufs[y]), y);
         enqueue(exit,x);//cosas pasan
         if(full(exit)){
