@@ -22,20 +22,17 @@ int qb_refill(struct queue_buf *q, int fd) {
 }
 
 int qb_flush(struct queue_buf *q, int fd) {
-    int ret, start, total;
+    int ret, idx, total;
     int *elems;
 
-    start = 0;
-    elems = q->elems;
-    total = q->n_elems * sizeof(int);
+    idx = ret = 0;
+    size = q->n_elems * sizeof(int);
 
-    while (1) {
-        ret = write(fd, (void *)q->elems, (q->n_elems)*sizeof(int));
-        if (
-            ((elems = elems + ret/(sizeof(int))) ;
+    while ((ret = write(fd, &elems[idx], size - idx)) > 0 && (size - idx) > 0) idx += ret;
+
     q->n_elems = q->first = 0;
 
-    return ret;
+    return (ret < 0)? ret : idx;
 }
 
 int qb_enqueue(struct queue_buf *q, int new_elem) {
