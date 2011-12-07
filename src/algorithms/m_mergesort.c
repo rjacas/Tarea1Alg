@@ -11,19 +11,19 @@ void m_mergesort(int in){
     bufs[i] = queue_buf_new(l);
   }
   exit = queue_buf_new(l);  
-  mergesort(fd, n, 0);//no se si esto este correcto 
+  mergesort(fd, n, 0);
 } 
 
 void mergesort(int fd, int size, int pos){
   if(size <= l)
-    quicksort(fd,size,pos);//probar
+    quicksort(fd,size);
   else{
     int i;
     for(i = 0;i < k; i++){
       mergesort(fd,size/k,i);
     }
   }
-  //merge
+
   int r;
   while(r < size){
     int j;
@@ -37,23 +37,24 @@ void mergesort(int fd, int size, int pos){
         pq_extract(heap,&x, &y);
         if(!empty(buf[y])
           pq_insert(heap, dequeue(bufs[y]), y);
-        enqueue(exit,x);
-        if(full(exit))
-          flush(..);//hacer
+        enqueue(exit,x);//cosas pasan
+        if(full(exit)){
+          write(fd, (void*) exit->elems, l);//falta vaciar 
+        }
     }
     r += k;
   }
+  if(pos == k)
+    lseek(fd, 0, SEEK_SET);
 }
 
-void quicksort(int fd, int size, int pos){//confirmar
+void quicksort(int fd, int size){
   int ret;
   int* buff; 
   buff = (int *)malloc(sizeof(int) * size);
-  ret = read(fd, (void *)buf, size);
+  ret = read(fd, (void *)buff, size);
   quickaux(0, size - 1, buff);
-  //lseek(pos); ??
-  //write(fd, (void *)buf, size); ??
-  //lseel(pos); ??
+  write(fd, (void *)buff, size);
   free(buff);
 }
 
