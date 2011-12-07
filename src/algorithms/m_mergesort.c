@@ -23,13 +23,21 @@ void mergesort(int fd, int size, int pos){
       mergesort(fd,size/k,i);
     }
   }
+  //masta while
   int j;
   for(j = 0; j < k; j++){
     refill_queue_buf(bufs[j],fd);
     pq_insert(heap, dequeue(bufs[j]), j);
   }
   while(!empty(heap)){
-      
+      int x;
+      int y;
+      pq_extract(heap,&x, &y);
+      if(!empty(buf[y])
+        pq_insert(heap, dequeue(bufs[y]), y);
+      enqueue(exit,x);
+      if(full(exit))
+        flush(..);//hacer
   }  
   
 }
