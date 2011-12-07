@@ -1,7 +1,7 @@
 empty en priority
 enqueue en queque
 full en queque
-quicksort para los ordenamientos basicos
-flush para tirar al archivo
+flush, que vacie el queue 
+  (para usar luego de hacer write(fd,(void *)exit->elems,size);) 
 
 
