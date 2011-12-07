@@ -13,3 +13,12 @@
 #define n N/B
 #define l m/k
 #define k 4
+
+
+void m_mergesort(int fd);
+
+void mergesort(int fd, int size, int pos);
+
+void m_quicksort(int fd, int size);
+
+void quickaux(int begin, int end,int *buf);

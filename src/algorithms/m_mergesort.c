@@ -1,11 +1,11 @@
 #include "m_mergesort.h"
 
-queue_buf* bufs[k]; 
-queue_buf* exit;
-priority_queue* heap;
-
 void mergesort(int fd, int size, int pos);
 void quickaux(int begin, int end,int *buf);
+
+struct queue_buf* bufs[k]; 
+struct queue_buf* ex;
+struct priority_queue* heap;
 
 void m_mergesort(int fd){
   int i;
@@ -13,8 +13,9 @@ void m_mergesort(int fd){
   for( i = 0; i < k; i++){
     bufs[i] = queue_buf_new(l);
   }
-  exit = queue_buf_new(l);  
+  ex = queue_buf_new(l);  
   mergesort(fd, n, 0);
+  pq_free(heap);
 } 
 
 void mergesort(int fd, int size, int pos){
@@ -34,15 +35,15 @@ void mergesort(int fd, int size, int pos){
       refill_queue_buf(bufs[j],fd);
       pq_insert(heap, dequeue(bufs[j]), j);
     }
-    while(!empty(heap)){
+    while(!pq_empty(heap)){
         int x;
         int y;
         pq_extract(heap,&x, &y);
-        if(!empty(bufs[y])
+        if(!empty(bufs[y]))
           pq_insert(heap, dequeue(bufs[y]), y);
-        enqueue(exit,x);//cosas pasan
-        if(full(exit)){
-          write(fd, (void*) exit->elems, l);//falta vaciar 
+        enqueue(ex,x);
+        if(full(ex)){
+          write(fd, (void*) ex->elems, l);//falta vaciar 
         }
     }
     r += k;
@@ -51,7 +52,7 @@ void mergesort(int fd, int size, int pos){
     lseek(fd, 0, SEEK_SET);
 }
 
-void quicksort(int fd, int size){
+void m_quicksort(int fd, int size){
   int ret;
   int* buff; 
   buff = (int *)malloc(sizeof(int) * size);
@@ -77,6 +78,11 @@ void quickaux(int begin, int end,int *buf){
     }     
   }
   buf[j] = pivot;
-  quickaux(start, j-1,buf);
+  quickaux(begin, j-1,buf);
   quickaux(j+1, end,buf); 
 } 
+
+int main(){
+  return 1;
+}
+
