@@ -11,16 +11,16 @@ void m_mergesort(int fd){
   int i;
   heap = pq_new(k);
   for( i = 0; i < k; i++){
-    bufs[i] = queue_buf_new(l);
+    bufs[i] = qb_new(l);
   }
-  ex = queue_buf_new(l);  
+  ex = qb_new(l);  
   mergesort(fd, n, 0);
   pq_free(heap);
 } 
 
 void mergesort(int fd, int size, int pos){
   if(size <= l)
-    quicksort(fd,size);
+    m_quicksort(fd,size);
   else{
     int i;
     for(i = 0;i < k; i++){
@@ -32,17 +32,17 @@ void mergesort(int fd, int size, int pos){
   while(r < size){
     int j;
     for(j = 0; j < k; j++){
-      refill_queue_buf(bufs[j],fd);
-      pq_insert(heap, dequeue(bufs[j]), j);
+      qb_refill(bufs[j],fd);
+      pq_insert(heap, qb_dequeue(bufs[j]), j);
     }
     while(!pq_empty(heap)){
         int x;
         int y;
         pq_extract(heap,&x, &y);
-        if(!empty(bufs[y]))
-          pq_insert(heap, dequeue(bufs[y]), y);
-        enqueue(ex,x);
-        if(full(ex)){
+        if(!qb_empty(bufs[y]))
+          pq_insert(heap, qb_dequeue(bufs[y]), y);
+        qb_enqueue(ex,x);
+        if(qb_full(ex)){
           write(fd, (void*) ex->elems, l);//falta vaciar 
         }
     }
