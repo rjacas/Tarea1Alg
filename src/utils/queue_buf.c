@@ -22,33 +22,33 @@ int qb_refill(struct queue_buf *q, int fd) {
 }
 
 int qb_flush(struct queue_buf *q, int fd) {
-    int ret, idx, total;
-    int *elems;
+    int ret, idx, size;
 
     idx = ret = 0;
     size = q->n_elems * sizeof(int);
 
-    while ((ret = write(fd, &elems[idx], size - idx)) > 0 && (size - idx) > 0) idx += ret;
+    /* Y PAF */
+    while ((ret = write(fd, &(q->elems[idx]), size - idx)) > 0 && (size - idx) > 0) idx += ret;
 
     q->n_elems = q->first = 0;
 
     return (ret < 0)? ret : idx;
 }
 
-int qb_enqueue(struct queue_buf *q, int new_elem) {
+void qb_enqueue(struct queue_buf *q, int new_elem) {
 #ifdef DEBUG
-    if (full(q)) {
+    if (qb_full(q)) {
         printf("Queue is full!");
         exit(0);
     }
 #endif
-    q->elems[n_elems++] = new_elem;
+    q->elems[q->n_elems++] = new_elem;
     
 }
 
 int qb_dequeue(struct queue_buf *q) {
 #ifdef DEBUG
-    if (empty(q)) {
+    if (qb_empty(q)) {
         printf("No element to dequeue!\n");
         exit(1);
     }

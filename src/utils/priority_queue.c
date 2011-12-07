@@ -44,7 +44,7 @@ void pq_extract(struct priority_queue *pq, int *elem, int *origin) {
     int tmp, i, j;
 
 #ifdef DEBUG
-    if (pq->elems[0].id1 == 0) {
+    if (pq->elems[0].i1 == 0) {
         printf("No elements to extract from priority queue.\n");
         exit(1);
     }
