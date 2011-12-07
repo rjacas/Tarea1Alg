@@ -11,7 +11,7 @@ struct priority_queue *pq_new(int size) {
     return p;
 }
 
-int empty(struct priority_queue *p) {
+int pq_empty(struct priority_queue *p) {
     return ((p->elems[0].id1 == 0)? TRUE : FALSE);
 }
 

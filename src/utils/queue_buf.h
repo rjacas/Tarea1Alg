@@ -35,7 +35,7 @@ Returns:
     a newly allocated queue_buf structure. It must be
     freed with free_queue_buf.
 */
-struct queue_buf *queue_buf_new(int size);
+struct queue_buf *qb_new(int size);
 
 /*
    Refills a queue_buf structure with integers extracted
@@ -50,7 +50,7 @@ Returns:
     if it was not filled (the queue_buf might be empty
     or partially filled).
 */
-int refill_queue_buf(struct queue_buf *q, int fd);
+int qb_refill(struct queue_buf *q, int fd);
 
 /*
    Writes the content of a queue_buf to a file.
@@ -69,7 +69,7 @@ Returns:
     -1 will be returned and errno will be changed to an appropiate
     value (same behavior as that of write(): see man 2 write)
 */
-int flush(struct queue_buf *q, int fd);
+int qb_flush(struct queue_buf *q, int fd);
 
 /*
    Enqueues an integer at the end of the queue_buf.
@@ -84,7 +84,7 @@ Params:
     new_elem(IN) - the element to be enqueued.
 
 */
-void enqueue(struct queue_buf *q, int new_elem);
+void qb_enqueue(struct queue_buf *q, int new_elem);
 
 /* 
    Dequeues the first element from the queue_buf. Unspecified
@@ -98,7 +98,7 @@ Returns:
     the first integer in the queue_buf, or unspecified
     behavior if there are no elements are in the queue_buf.
 */
-int dequeue(struct queue_buf *q);
+int qb_dequeue(struct queue_buf *q);
 
 /*
    Checks if a queue_buf is empty.
@@ -110,7 +110,7 @@ Returns:
     TRUE if the queue_buf is empty; FALSE if it isn't.
 */
  
-int empty(struct queue_buf *q);
+int qb_empty(struct queue_buf *q);
 
 /*
    Checks if a queue_buf is full.
@@ -122,6 +122,6 @@ Returns:
     TRUE if the queue_buf is full; FALSE if it isn't.
 */
  
-int full(struct queue_buf *q);
+int qb_full(struct queue_buf *q);
 
 #endif

@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include "queue_buf.h"
 
-struct queue_buf *queue_buf_new(int size) {
+struct queue_buf *qb_new(int size) {
     struct queue_buf *q;
 
     q = (struct queue_buf *)malloc(sizeof(struct queue_buf));
@@ -11,7 +11,7 @@ struct queue_buf *queue_buf_new(int size) {
     return q;
 }
 
-int refill_queue_buf(struct queue_buf *q, int fd) {
+int qb_refill(struct queue_buf *q, int fd) {
    int ret;
 
    ret = read(fd, (void *)q->elems, (q->size)*sizeof(int));
@@ -21,7 +21,7 @@ int refill_queue_buf(struct queue_buf *q, int fd) {
    return (q->n_elems == q->size)? TRUE : FALSE;
 }
 
-int flush(struct queue_buf *q, int fd) {
+int qb_flush(struct queue_buf *q, int fd) {
     int ret, start, total;
     int *elems;
 
@@ -38,7 +38,7 @@ int flush(struct queue_buf *q, int fd) {
     return ret;
 }
 
-int enqueue(struct queue_buf *q, int new_elem) {
+int qb_enqueue(struct queue_buf *q, int new_elem) {
 #ifdef DEBUG
     if (full(q)) {
         printf("Queue is full!");
@@ -49,7 +49,7 @@ int enqueue(struct queue_buf *q, int new_elem) {
     
 }
 
-int dequeue(struct queue_buf *q) {
+int qb_dequeue(struct queue_buf *q) {
 #ifdef DEBUG
     if (empty(q)) {
         printf("No element to dequeue!\n");
@@ -59,7 +59,10 @@ int dequeue(struct queue_buf *q) {
     return q->elems[q->ptr++];
 }
 
-int empty(struct queue_buf *q) {
+int qb_empty(struct queue_buf *q) {
     return (q->n_elems == q->ptr)? TRUE : FALSE;
 }
-            
+      
+int qb_full(struct queue_buf *q) {
+    return (q->n_elems == q->size)? TRUE : FALSE;
+}

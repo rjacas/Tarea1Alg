@@ -41,7 +41,7 @@ Returns:
     wasn't.
 */
 
-int empty(struct priority_queue *p);
+int pq_empty(struct priority_queue *p);
 
 /*
     Inserts an element in the priority queue, along with an identifier
