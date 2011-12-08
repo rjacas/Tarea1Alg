@@ -101,6 +101,20 @@ Returns:
 int qb_dequeue(struct queue_buf *q);
 
 /*
+   Returns the array of elements from a queue_buf and its size.
+   It will not be a shallow copy, so the queue_buf should not be
+   deallocated while the returned array is used.
+
+Params:
+    q(IN) - the queue_buf to get the elements from.
+    arr(OUT) - pointer to where to leave the array of elements.
+    size(OUT) - pointer to where to leave the number of elements
+    extracted.
+
+*/
+void qb_get_array(struct queue_buf *q, int **arr, int *size);
+
+/*
    Checks if a queue_buf is empty.
 
 Params:

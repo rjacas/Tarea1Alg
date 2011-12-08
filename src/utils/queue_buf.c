@@ -56,6 +56,12 @@ int qb_dequeue(struct queue_buf *q) {
     return q->elems[q->first++];
 }
 
+void qb_get_array(struct queue_buf *q, int **arr, int *size) {
+
+    *arr = q->elems + q->first;
+    *size = q->n_elems;
+}
+
 int qb_empty(struct queue_buf *q) {
     return (q->n_elems == q->first)? TRUE : FALSE;
 }

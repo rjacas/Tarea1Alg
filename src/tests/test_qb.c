@@ -11,13 +11,15 @@
 void main(int argc, char **argv) {
     int fd, i;
     int foo[N_ELEMS];
+    int *arr;
+    int size;
     struct queue_buf *qb;
 
     fd = open("test_file", O_RDWR | O_CREAT, S_IRWXU | S_IRGRP | S_IROTH);
   
     for (i = 0; i < N_ELEMS; i++) {
         foo[i] = rand();
-        printf("Foo[%d]=%d\n", i, foo[i]);
+        printf("Test_File[%d]=%d\n", i, foo[i]);
     }
 
     write(fd, (void *)foo, sizeof(int)*N_ELEMS);
@@ -29,9 +31,22 @@ void main(int argc, char **argv) {
     qb = qb_new(N_ELEMS);
 
     qb_refill(qb, fd);
-
+    
+    printf("\n ============= Test 1 ============= \n");
     for (i = 0; i < N_ELEMS; i++) {
         printf("Extracted %d\n", qb_dequeue(qb));
     }
 
+    lseek(fd, 0, SEEK_SET);
+    
+    printf("\n ============= Test 2 ============= \n");
+    qb_refill(qb, fd);
+    
+    qb_get_array(qb, &arr, &size);
+
+    for (i = 0; i < size; i++) {
+        printf("Extracted %d\n", arr[i]);
+    }
+
+    close(fd);
 }
