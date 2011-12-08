@@ -1,11 +1,11 @@
+#define DEBUG
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <stdlib.h>
 #include "../algorithms/m_mergesort.h"
-
-#define DEBUG
+#include "../utils/test_utils.h"
 #define N_ELEMS 8
 
 main(int argc, char **argv) {
@@ -19,7 +19,7 @@ main(int argc, char **argv) {
         exit(1);
     }
 
-    fd = open(argv[1], O_RDRW);
+    fd = open(argv[1], O_RDWR);
     m_mergesort(fd);
 
     printf("Getting %d random integers from file...\n");
