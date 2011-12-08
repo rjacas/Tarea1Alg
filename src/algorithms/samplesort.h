@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <math.h>
 #include "m_mergesort.h"
 
 
@@ -14,4 +15,4 @@
 #define n N/B
 #define l m/k
 #define k 4
-#define a 2 //log2(k)
+#define a log(k)/log(2) /*log2(k)*/
