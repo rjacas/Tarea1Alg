@@ -31,12 +31,19 @@ void main(int argc, char **argv) {
     qb = qb_new(N_ELEMS);
 
     qb_refill(qb, fd);
-    
+    if (!qb_full(qb)) {
+        printf("Error: I'm not full!");
+    }
+ 
     printf("\n ============= Test 1 ============= \n");
     for (i = 0; i < N_ELEMS; i++) {
         printf("Extracted %d\n", qb_dequeue(qb));
     }
 
+    if (!qb_empty(qb)) {
+        printf("Error: I'm not empty!");
+    }
+ 
     lseek(fd, 0, SEEK_SET);
     
     printf("\n ============= Test 2 ============= \n");
@@ -47,6 +54,6 @@ void main(int argc, char **argv) {
     for (i = 0; i < size; i++) {
         printf("Extracted %d\n", arr[i]);
     }
-
+    
     close(fd);
 }

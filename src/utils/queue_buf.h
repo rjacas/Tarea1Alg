@@ -20,9 +20,6 @@ struct queue_buf {
 
     /*Position of the first non-null element in the queue_buf */
     int first;
-
-     /*Position of the first empty space (in other words, last_elem + 1) */
-    int first_empty_space;
 };
 
 /*
@@ -39,18 +36,38 @@ struct queue_buf *qb_new(int size);
 
 /*
    Refills a queue_buf structure with integers extracted
-   from a file.It assumes the queue_buf is empty: if called
+   from a file. It assumes the queue_buf is empty: if called
    on a non-empty queue_buf, the old data will be deleted.
 
 Params:
-    q(IN) - the queue_buf structure to be refilled.
-    fd(IN) - the file descriptor for the file to be used.
+    q(IN/OUT) - the queue_buf structure to be refilled.
+    fd(IN/OUT) - the file descriptor for the file to be used.
 Returns:
     TRUE if the structure was successfully filled; FALSE
     if it was not filled (the queue_buf might be empty
     or partially filled).
 */
 int qb_refill(struct queue_buf *q, int fd);
+
+/*
+   Refills a queue_buf structure with integers extracted
+   from a file. It assumes the queue_buf is empty: if called
+   on a non-empty queue_buf, the old data will be deleted.
+   At most max_bytes are read.
+
+Params:
+    q(IN/OUT) - the queue_buf structure to be refilled.
+    fd(IN/OUT) - the file descriptor for the file to be used.
+    max_bytes(IN) - maximum amount of bytes to be read from fd.
+
+Returns:
+    TRUE if the structure was successfully filled; FALSE
+    if it was not filled (the queue_buf might be empty
+    or partially filled).
+*/
+int qb_refill_max(struct queue_buf *q, int fd, int max_bytes);
+
+
 
 /*
    Writes the content of a queue_buf to a file.

@@ -21,6 +21,20 @@ int qb_refill(struct queue_buf *q, int fd) {
    return (q->n_elems == q->size)? TRUE : FALSE;
 }
 
+int qb_refill_max(struct queue_buf *q, int fd, int max_bytes) {
+   int ret;
+
+   if (max_bytes >= q->n_elems) return qb_refill(q, fd);
+
+   ret = read(fd, (void *)q->elems, max_bytes);
+
+   q->n_elems = ret/sizeof(int);
+   q->first = 0;
+
+   return (q->n_elems == q->size)? TRUE : FALSE;
+}
+
+
 int qb_flush(struct queue_buf *q, int fd) {
     int ret, idx, size;
 
@@ -53,6 +67,7 @@ int qb_dequeue(struct queue_buf *q) {
         exit(1);
     }
 #endif
+    q->n_elems--;
     return q->elems[q->first++];
 }
 
@@ -63,7 +78,7 @@ void qb_get_array(struct queue_buf *q, int **arr, int *size) {
 }
 
 int qb_empty(struct queue_buf *q) {
-    return (q->n_elems == q->first)? TRUE : FALSE;
+    return (q->n_elems == 0)? TRUE : FALSE;
 }
       
 int qb_full(struct queue_buf *q) {

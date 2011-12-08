@@ -6,6 +6,7 @@
 #include "../utils/queue_buf.h"
 #include "../utils/priority_queue.h"
 
+#ifdef ASDF
 /* Amount of elements that will fit in memory */
 #define M 26214400
 
@@ -28,7 +29,7 @@
 
 /* Number of queue_bufs to be used */
 #define k 4
-
+#endif
 /* 
    Uses in-place k-ary mergesort to sort a file, using at most l blocks
    per queue.

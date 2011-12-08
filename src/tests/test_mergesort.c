@@ -6,8 +6,8 @@
 #include <stdlib.h>
 #include "../algorithms/m_mergesort.h"
 #include "../utils/test_utils.h"
-#define N_ELEMS 8
 
+#define N_ELEMS 24
 main(int argc, char **argv) {
     int foo[N_ELEMS];
     int i, fd;
@@ -19,13 +19,17 @@ main(int argc, char **argv) {
         exit(1);
     }
 
+    fd = open(argv[1], O_RDONLY);
+    
+    print_file_integers(fd);
+
+    close(fd);
+
+    printf("Sorting...\n");
     fd = open(argv[1], O_RDWR);
     m_mergesort(fd);
 
-    printf("Getting %d random integers from file...\n");
-    size = read(fd, (void *)foo, sizeof(int) * N_ELEMS);
-
-    for (i = 0; i < N_ELEMS; i++) {
-        printf("Random  number: %d\n", foo[i]);
-    }
+    lseek(fd, 0, SEEK_SET);
+    print_file_integers(fd);
+    close(fd);
 }

@@ -3,12 +3,21 @@
 #include "../utils/queue_buf.h"
 #include "../utils/priority_queue.h"
 
-struct queue_buf *bufs[k]; 
+int B = 2;
+int N = 24;
+int M = 24;
+int m = 12; //  M/B
+int k = 3;  //
+int l = 4; // = m / k 
+int n = 12; //N/B
+
+//replace k with 3
+struct queue_buf *bufs[3]; 
 struct queue_buf *ex;
 struct priority_queue *heap;
 
 void m_mergesort(int fd){
-  int i;
+  int i, aux;
   heap = pq_new(k);
   for( i = 0; i < k; i++){
     bufs[i] = qb_new(l * B);
@@ -18,9 +27,11 @@ void m_mergesort(int fd){
   pq_free(heap);
 } 
 
-void mergesort(int fd, int size, int child_idx, int file_pos){
+void mergesort(int fd, int size, int file_pos) {
   int i, new_size;
  
+  int value;
+  int qb_idx;
   /* This is done only because this would be the only use
      of math.h . If you end up including math.h, change this
      to ceil(size/k) */
@@ -33,21 +44,19 @@ void mergesort(int fd, int size, int child_idx, int file_pos){
       lseek(fd, file_pos, SEEK_SET);
 
       for (i = 0; i < k; i++) {
-          /* FIXME Read at most new_size */
-        qb_refill(bufs[i], fd, new_size * B);
+        qb_refill_max(bufs[i], fd, new_size * B);
         m_quicksort(bufs[i]);
       }
   } else {
       for (i = 0; i < k; i++) {
-        mergesort(fd, new_size, i, file_pos + i * B * sizeof(int) * new_size);
+        mergesort(fd, new_size, file_pos + i * B * sizeof(int) * new_size);
       }
   }
 
   /* After this, we have k sorted children of size new_size.
      It's merge time! */
 
-  int r;
-
+  int r = 0;
   /* Only when I have merged all sectors I will be free :c */
   while (r < size) {
 
@@ -61,27 +70,39 @@ void mergesort(int fd, int size, int child_idx, int file_pos){
             qb_refill(bufs[i],fd);
             pq_insert(heap, qb_dequeue(bufs[i]), i);
         }
+    } else {
+        for (i = 0; i < k; i++) {
+            pq_insert(heap, qb_dequeue(bufs[i]), i);
+        }
     }
-    
+   
+    if (r == 0) {
+        printf("first\n");
+    }
     lseek(fd, file_pos + r * B * sizeof(int) , SEEK_SET);
 
-    while (!pq_empty(heap)) {
-        int value;
-        int qb_idx;
-        pq_extract(heap,&value, &qb_idx);
-        
+    while (!pq_empty(heap) && r < size) {
+        pq_extract(heap, &value, &qb_idx);
+        i++;
         if (!qb_empty(bufs[qb_idx])) {
           pq_insert(heap, qb_dequeue(bufs[qb_idx]), qb_idx);
+        printf("Got %d from %d\n", value, qb_idx); 
+        } else {
+            printf("foo\n");
         }
-
-        qb_enqueue(ex, value);
         
+        qb_enqueue(ex, value);
+        if (qb_full(ex)) {
+            qb_flush(ex, fd);
+            r += l;
+        }
     }
-    
     /* If the priority queue is empty, then we have to flush
        the empty buf, whether it is full or not. */
-    qb_flush(ex, fd);
-    r += k;
+    if (!qb_empty(ex)) {
+        qb_flush(ex, fd);
+        r += l;
+    }
 
   }
 

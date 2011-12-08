@@ -57,9 +57,9 @@ void pq_extract(struct priority_queue *pq, int *elem, int *origin) {
     pq->elems[0].i1--;
     i = 1;
 
-    while (2 * i < pq->elems[0].i1) {
+    while (2 * i <= pq->elems[0].i1) {
         j = 2 * i;
-        if (j + 1 < pq->elems[0].i1 && pq->elems[j+1].i1 <= pq->elems[j].i1) j++;
+        if ((j + 1) <= pq->elems[0].i1 && pq->elems[j+1].i1 < pq->elems[j].i1) j++;
 
         if (pq->elems[i].i1 < pq->elems[j].i1) break;
 
