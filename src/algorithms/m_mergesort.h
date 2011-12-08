@@ -3,6 +3,8 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "../utils/queue_buf.h"
+#include "../utils/priority_queue.h"
 
 #define M 26214400
 #define N 6710886400
@@ -11,7 +13,7 @@
 #define n N/B
 #define l m/k
 #define k 4
-#define N_ELEMS 10
+#define N_ELEMS 100
 
 /* 
    Uses in-place k-ary mergesort to sort a file, using at most l blocks
@@ -36,7 +38,7 @@ Params:
 */
 void mergesort(int fd, int size, int pos);
 
-void m_quicksort(int fd, int size, int pos);
+void m_quicksort(struct queue_buf *q);
 void quickaux(int begin, int end,int *buf);
 
 
