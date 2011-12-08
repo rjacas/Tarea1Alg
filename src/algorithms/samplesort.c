@@ -12,7 +12,6 @@ void samplesort(int fd){
 
 	fill_samples(samples,fd);
 
-
 	/*limite min*/
 	keys[0] = 0;
 
@@ -104,6 +103,7 @@ void fill_files(){
 
 void sort_files(){
 	
+	/*hacer quickaux de un arreglo de elementos del archivo*/
 	quickaux();
 
 }
