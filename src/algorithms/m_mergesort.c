@@ -20,7 +20,7 @@ void m_mergesort(int fd){
 
 void mergesort(int fd, int size, int pos){
   if(size <= l)
-    m_quicksort(fd,size,pos);
+    m_quicksort(bufs[pos]);
   else{
     int i;
     for(i = 0;i < k; i++){
@@ -52,14 +52,11 @@ void mergesort(int fd, int size, int pos){
     lseek(fd, 0, SEEK_SET);
 }
 
-void m_quicksort(int fd, int size, int pos){
-  int ret;
-  int* buff; 
-  buff = (int *)malloc(sizeof(int) * size);
-  ret = read(fd, (void *)buff, size);
-  lseek(fd, pos, SEEK_SET);
+void m_quicksort(struct queue_buf *q){
+  int *buff;
+  int size;
+  qb_get_array(q, &buff, &size);
   sort(buff, 0, size);
-  write(fd, (void *)buff, size);
 }
 
 void swap(int *a, int *b){
@@ -94,11 +91,11 @@ int main(){
         printf("Foo[%d]=%d\n", i, foo[i]);
     }
     write(fd, (void *)foo, sizeof(int)*N_ELEMS);
-    m_quicksort(fd, N_ELEMS,0);
     close(fd);
     fd = open("test_file", O_RDWR);
     qb = qb_new(N_ELEMS);
     qb_refill(qb, fd);
+    m_quicksort(qb);
     for (i = 0; i < N_ELEMS; i++) {
         printf("Extracted %d\n", qb_dequeue(qb));
     }
