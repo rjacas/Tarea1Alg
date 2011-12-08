@@ -13,7 +13,6 @@
 #define n N/B
 #define l m/k
 #define k 4
-#define N_ELEMS 100
 
 /* 
    Uses in-place k-ary mergesort to sort a file, using at most l blocks

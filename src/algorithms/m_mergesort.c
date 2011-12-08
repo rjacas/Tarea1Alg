@@ -27,7 +27,6 @@ void mergesort(int fd, int size, int pos){
       mergesort(fd,size/k,i);
     }
   }
-
   int r;
   while(r < size){
     int j;
@@ -39,8 +38,9 @@ void mergesort(int fd, int size, int pos){
         int x;
         int y;
         pq_extract(heap,&x, &y);
-        if(!qb_empty(bufs[y]))
+        if(!qb_empty(bufs[y]) && ((heap->elems[0].i1 + 1) != heap->elems[0].i2)){
           pq_insert(heap, qb_dequeue(bufs[y]), y);
+        }
         qb_enqueue(ex,x);
         if(qb_full(ex)){
           qb_flush(ex, fd);
@@ -52,7 +52,7 @@ void mergesort(int fd, int size, int pos){
     lseek(fd, 0, SEEK_SET);
 }
 
-void m_quicksort(struct queue_buf *q){
+void m_quicksort(struct queue_buf *q){//funciona perro :D
   int *buff;
   int size;
   qb_get_array(q, &buff, &size);
@@ -79,26 +79,5 @@ void sort(int *arr, int beg, int end){
     sort(arr, beg, q);
     sort(arr, r, end);
   }
-}
-
-int main(){
-    int fd, i;
-    int foo[N_ELEMS];
-    struct queue_buf *qb;
-    fd = open("test_file", O_RDWR | O_CREAT, S_IRWXU | S_IRGRP | S_IROTH);
-    for (i = 0; i < N_ELEMS; i++) {
-        foo[i] = rand();
-        printf("Foo[%d]=%d\n", i, foo[i]);
-    }
-    write(fd, (void *)foo, sizeof(int)*N_ELEMS);
-    close(fd);
-    fd = open("test_file", O_RDWR);
-    qb = qb_new(N_ELEMS);
-    qb_refill(qb, fd);
-    m_quicksort(qb);
-    for (i = 0; i < N_ELEMS; i++) {
-        printf("Extracted %d\n", qb_dequeue(qb));
-    }
-    return 1;
 }
 
