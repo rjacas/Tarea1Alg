@@ -6,7 +6,13 @@ int files[k];
 char name_file[50];
 int sizes[k];
 
+void fill_samples(int *samples, int fd);
+void fill_files();
+void sort_files(int fd);
+
 void samplesort(int fd){
+
+	/*hay que hacer esto para todo el archivo grande*/
 
 	int i;
 
@@ -21,7 +27,7 @@ void samplesort(int fd){
 
 
 	/*ordenar pivotes*/
-	quickaux(0,k-1,keys);
+	sort(0,k,keys);
 
 
 	/*crear archivos*/
@@ -42,9 +48,9 @@ void samplesort(int fd){
 	
 	/*¿sera necesario?*/
 	for(i = 0 ; i < k ; i++)
-		close(files[i]);
+		lseek(files[i], 0, SEEK_SET);
 	
-	sort_files();
+	sort_files(fd);
 
 }
 
@@ -101,9 +107,14 @@ void fill_files(){
 	
 }
 
-void sort_files(){
+void sort_files(int fd){
 	
 	/*hacer quickaux de un arreglo de elementos del archivo*/
-	quickaux();
-
+	int i ;
+	for(i = 0; i < k; i++){		
+		int bucket[sizes[i]];
+		read(files[i], (void *)bucket,sizeof(int)*sizes[i]);
+		sort(bucket,0,sizes[i]);
+		/*se podria escribir altiro en el archivo final*/
+	}
 }
