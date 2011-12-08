@@ -1,7 +1,7 @@
 #include "m_mergesort.h"
 
-void mergesort(int fd, int size, int pos);
-void quickaux(int begin, int end,int *buf);
+#include "../utils/queue_buf.h"
+#include "../utils/priority_queue.h"
 
 struct queue_buf* bufs[k]; 
 struct queue_buf* ex;
