@@ -20,7 +20,7 @@ main(int argc, char **argv) {
 
     fd = open(argv[1], O_RDONLY);
 
-    printf("Getting %d random integers from file...\n");
+    printf("Getting %d random integers from file...\n", N_ELEMS);
     size = read(fd, (void *)foo, sizeof(int) * N_ELEMS);
 
     for (i = 0; i < N_ELEMS; i++) {

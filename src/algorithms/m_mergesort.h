@@ -39,7 +39,6 @@ Params:
 void mergesort(int fd, int size, int pos);
 
 void m_quicksort(struct queue_buf *q);
-void quickaux(int begin, int end,int *buf);
 
 
 void swap(int *a, int *b);
