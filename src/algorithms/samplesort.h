@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include "../utils/queue_buf.h"
-#include "../utils/priority_queue.h"
+#include "m_mergesort.h"
+
 
 #define M 26214400
 #define N 6710886400
