@@ -1,7 +1,7 @@
 #include "m_mergesort.h"
 
-void mergesort(int fd, int size, int pos);
-void quickaux(int begin, int end,int *buf);
+#include "../utils/queue_buf.h"
+#include "../utils/priority_queue.h"
 
 struct queue_buf* bufs[k]; 
 struct queue_buf* ex;
@@ -20,7 +20,7 @@ void m_mergesort(int fd){
 
 void mergesort(int fd, int size, int pos){
   if(size <= l)
-    m_quicksort(fd,size,pos);
+    m_quicksort(bufs[pos]);
   else{
     int i;
     for(i = 0;i < k; i++){
@@ -52,42 +52,35 @@ void mergesort(int fd, int size, int pos){
     lseek(fd, 0, SEEK_SET);
 }
 
-void m_quicksort(int fd, int size, int pos){
-  int ret;
-  int* buff; 
-  buff = (int *)malloc(sizeof(int) * size);
-  ret = read(fd, (void *)buff, size);
-  lseek(fd, pos, SEEK_SET);
-  quickaux(0, size, buff);
-  write(fd, (void *)buff, size);
+void m_quicksort(struct queue_buf *q){
+  int *buff;
+  int size;
+  qb_get_array(q, &buff, &size);
+  sort(buff, 0, size);
 }
 
-void quickaux(int begin, int end,int *buf){
-  int i,j,temp,pivot;
-  pivot = buf[end];
-  i = begin-1;
-  j = end;
-  while(1){
-    while (buf[++i] < pivot);
-    while (buf[--j] > pivot);
-    if(i < j) {
-      temp = buf[i];
-      buf[i] = buf[j]; 
-      buf[j] = temp;
-    }
-    else
-      break;    
-  }
-  temp = buf[i];  
-  buf[i] = buf[end];  
-  buf[end] = temp; 
-  if(i > 0 && i > begin)
-    quickaux(begin, i-1,buf);
-  if(end > 0 && i < end) 
-    quickaux(i+1, end,buf);    
-} 
+void swap(int *a, int *b){
+  int t=*a; *a=*b; *b=t;
+}
 
-#define N_ELEMS 5
+void sort(int *arr, int beg, int end){
+  int piv;
+  int q;
+  int r;
+  if(end > beg + 1){
+    piv = arr[beg], q = beg + 1, r = end;
+    while(q < r){
+      if (arr[q] <= piv)
+        q++;
+      else
+        swap(&arr[q], &arr[--r]);
+    }
+    swap(&arr[--q], &arr[beg]);
+    sort(arr, beg, q);
+    sort(arr, r, end);
+  }
+}
+
 int main(){
     int fd, i;
     int foo[N_ELEMS];
@@ -98,11 +91,11 @@ int main(){
         printf("Foo[%d]=%d\n", i, foo[i]);
     }
     write(fd, (void *)foo, sizeof(int)*N_ELEMS);
-    m_quicksort(fd, N_ELEMS,0);
     close(fd);
     fd = open("test_file", O_RDWR);
     qb = qb_new(N_ELEMS);
     qb_refill(qb, fd);
+    m_quicksort(qb);
     for (i = 0; i < N_ELEMS; i++) {
         printf("Extracted %d\n", qb_dequeue(qb));
     }
