@@ -50,7 +50,7 @@ Params:
     size -  size of the chunk of the file to sort, in sectors.
     file_pos - position in the file to start reading from, in bytes.
 */
-void mergesort(int fd, int size, int pos);
+void mergesort(int fd, int size, int child_idx, int file_pos);
 
 void m_quicksort(struct queue_buf *q);
 
