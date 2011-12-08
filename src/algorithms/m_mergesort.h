@@ -19,6 +19,6 @@ void m_mergesort(int fd);
 
 void mergesort(int fd, int size, int pos);
 
-void m_quicksort(int fd, int size);
+void m_quicksort(int fd, int size, int pos);
 
 void quickaux(int begin, int end,int *buf);
