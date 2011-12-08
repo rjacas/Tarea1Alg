@@ -23,7 +23,7 @@ void m_mergesort(int fd){
     bufs[i] = qb_new(l * B);
   }
   ex = qb_new(l * B);  
-  mergesort(fd, n, 0, 0);
+  mergesort(fd, n, 0);
   pq_free(heap);
 } 
 
