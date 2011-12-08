@@ -3,6 +3,7 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include "../utils/queue_buf.h"
 #include "../utils/priority_queue.h"
 
@@ -13,13 +14,4 @@
 #define n N/B
 #define l m/k
 #define k 4
-#define N_ELEMS 10
-
-void m_mergesort(int fd);
-
-void mergesort(int fd, int size, int pos);
-
-void m_quicksort(int fd, int size, int pos);
-
-void swap(int *a, int *b);
-void sort(int *arr, int beg, int end);
+#define a 2 //log2(k)

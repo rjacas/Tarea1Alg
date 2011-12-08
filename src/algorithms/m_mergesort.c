@@ -20,7 +20,7 @@ void m_mergesort(int fd){
 
 void mergesort(int fd, int size, int pos){
   if(size <= l)
-    m_quicksort(fd,size);
+    m_quicksort(fd,size,pos);
   else{
     int i;
     for(i = 0;i < k; i++){
@@ -43,7 +43,7 @@ void mergesort(int fd, int size, int pos){
           pq_insert(heap, qb_dequeue(bufs[y]), y);
         qb_enqueue(ex,x);
         if(qb_full(ex)){
-          write(fd, (void*) ex->elems, l);//falta vaciar 
+          qb_flush(ex, fd);
         }
     }
     r += k;
@@ -52,37 +52,56 @@ void mergesort(int fd, int size, int pos){
     lseek(fd, 0, SEEK_SET);
 }
 
-void m_quicksort(int fd, int size){
+void m_quicksort(int fd, int size, int pos){
   int ret;
   int* buff; 
   buff = (int *)malloc(sizeof(int) * size);
   ret = read(fd, (void *)buff, size);
-  quickaux(0, size - 1, buff);
+  lseek(fd, pos, SEEK_SET);
+  sort(buff, 0, size);
   write(fd, (void *)buff, size);
-  free(buff);
 }
 
-void quickaux(int begin, int end,int *buf){
-  int i,j,pivot;
-  pivot = buf[end];
-  i = begin;
-  j = end;
-  while(i != j){
-    if (buf[i] < pivot) { 
-      i += 1; 
-    } 
-    else { 
-      buf[j] = buf[i]; 
-      buf[i] = buf[j-1]; 
-      j -= 1; 
-    }     
+void swap(int *a, int *b){
+  int t=*a; *a=*b; *b=t;
+}
+
+void sort(int *arr, int beg, int end){
+  int piv;
+  int q;
+  int r;
+  if(end > beg + 1){
+    piv = arr[beg], q = beg + 1, r = end;
+    while(q < r){
+      if (arr[q] <= piv)
+        q++;
+      else
+        swap(&arr[q], &arr[--r]);
+    }
+    swap(&arr[--q], &arr[beg]);
+    sort(arr, beg, q);
+    sort(arr, r, end);
   }
-  buf[j] = pivot;
-  quickaux(begin, j-1,buf);
-  quickaux(j+1, end,buf); 
-} 
+}
 
 int main(){
-  return 1;
+    int fd, i;
+    int foo[N_ELEMS];
+    struct queue_buf *qb;
+    fd = open("test_file", O_RDWR | O_CREAT, S_IRWXU | S_IRGRP | S_IROTH);
+    for (i = 0; i < N_ELEMS; i++) {
+        foo[i] = rand();
+        printf("Foo[%d]=%d\n", i, foo[i]);
+    }
+    write(fd, (void *)foo, sizeof(int)*N_ELEMS);
+    m_quicksort(fd, N_ELEMS,0);
+    close(fd);
+    fd = open("test_file", O_RDWR);
+    qb = qb_new(N_ELEMS);
+    qb_refill(qb, fd);
+    for (i = 0; i < N_ELEMS; i++) {
+        printf("Extracted %d\n", qb_dequeue(qb));
+    }
+    return 1;
 }
 
