@@ -6,8 +6,8 @@ int files[k];
 char name_file[50];
 int sizes[k];
 
-void fill_samples(int *samples, int fd);
-void fill_files();
+void fill_samples(int *samples, int fd, int size);
+void fill_files(int fd);
 void sort_files(int fd);
 
 void samplesort(int fd){
@@ -16,7 +16,7 @@ void samplesort(int fd){
 
 	int i;
 
-	fill_samples(samples,fd);
+	fill_samples(samples,fd,m);
 
 	/*limite min*/
 	keys[0] = 0;
@@ -43,30 +43,35 @@ void samplesort(int fd){
 		write(files[i-1], keys[i], sizeof(int));
 		sizes[i-1]++;
 	}
-	
+		
+	/*aqui hay que empezar a meter los N numeros*/	
+		
 	fill_files();
 	
-	/*¿sera necesario?*/
+	/*
 	for(i = 0 ; i < k ; i++)
-		lseek(files[i], 0, SEEK_SET);
+		lseek(files[i], 0, SEEK_SET);*/
 	
-	sort_files(fd);
+	/*sort_files(fd);*/
 
 }
 
-void fill_samples(int *samples, int fd){
+void fill_samples(int *samples, int fd, int size){
 	
-	read(fd, (void *)samples,sizeof(int)*m);
+	read(fd, (void *)samples,sizeof(int)*size);
 	
 }
 
-void fill_files(){
+void fill_files(int fd){
+	
+	/*hay que estar verficando cuando todos superen los m elemntos*/
 	
 	int i,ini,fin,me,valor,temp;
+	char *val;
 	
-	for(i = 0; i < m ; i++){
+	while(read(fd,val,sizeof(int))>0){
 		
-		valor = samples[i];
+		valor = atoi(val);
 			
 		ini = 0;
 		fin = k-1;

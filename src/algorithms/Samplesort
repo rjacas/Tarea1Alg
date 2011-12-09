@@ -1,0 +1,19 @@
+Samplesort:
+
+Tomar m elementos cualesquiera del archivo.
+De esos se sacaran los pivotes.(listo)
+
+Luego vamos leyendo el archivo desde un principio, 
+y cada elemento lo metemos a su bucket correspondiente.
+
+Cuando todos los buckets tengan mas de m elementos, se
+subdividiran en k buckets, que quedaran ordenados, y el
+bucket inicial desaparece. Aqui se deberian calcular nuevos
+pivotes.
+
+Al final quedan muchos archivos, pero todos quedaran ordenados.
+Eso si que hay que ordenarlos dentro de si mismos.
+
+Desde un principio vamos tirando los numeros del gran archivo
+hasta que se terminen, de eso y del tamaño de los buckets
+dependera de cuando continua y termina el algoritmo.
