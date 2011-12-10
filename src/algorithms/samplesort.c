@@ -1,125 +1,216 @@
 #include "samplesort.h"
 
-int samples[m];
-int keys[k];
-int files[k];
-char name_file[50];
-int sizes[k];
+int filefd;
 
-void fill_samples(int *samples, int fd, int size);
-void fill_files(int fd);
-void sort_files(int fd);
+void fill_files(int fd, int inicio, int final, struct bucket *archivos,int *keys);
 
-void samplesort(int fd){
-
-	/*hay que hacer esto para todo el archivo grande*/
-
-	int i;
-
-	fill_samples(samples,fd,m);
-
-	/*limite min*/
-	keys[0] = 0;
-
-	/*iniciamos pivotes*/
-	for(i = 1; i < k; i++)
-		keys[i] = samples[(a + 1)*i];
-
-
-	/*ordenar pivotes*/
-	sort(0,k,keys);
-
-
-	/*crear archivos*/
-	for(i = 0; i < k ; i++ ){
-		sizes[i]=0;
-		memset(&name_file[0],0,sizeof(name_file));
-		sprintf(name_file, "buffer%d\n", i);
-		files[i] = open(name_file[i], O_RDWR | O_CREAT, S_IRWXU|S_IRWXG|S_IRWXO);
-	}
-	
-	/*escribimos pivotes en sus archivos correspondientes*/
-	for(i = 1; i < k; i++){
-		write(files[i-1], keys[i], sizeof(int));
-		sizes[i-1]++;
-	}
-		
-	/*aqui hay que empezar a meter los N numeros*/	
-		
-	fill_files();
-	
-	/*
-	for(i = 0 ; i < k ; i++)
-		lseek(files[i], 0, SEEK_SET);*/
-	
-	/*sort_files(fd);*/
-
+void swap(int *first, int *second){
+  int t;
+  t=*first; 
+  *first=*second; 
+  *second=t;
 }
 
-void fill_samples(int *samples, int fd, int size){
-	
-	read(fd, (void *)samples,sizeof(int)*size);
-	
+void sort(int *arr, int beg, int end){
+  int piv;
+  int q;
+  int r;
+  if(end > beg + 1){
+    piv = arr[beg], q = beg + 1, r = end;
+    while(q < r){
+      if (arr[q] <= piv)
+        q++;
+      else
+        swap(&arr[q], &arr[--r]);
+    }
+    swap(&arr[--q], &arr[beg]);
+    sort(arr, beg, q);
+    sort(arr, r, end);
+  }
 }
 
-void fill_files(int fd){
-	
-	/*hay que estar verficando cuando todos superen los m elemntos*/
-	
-	int i,ini,fin,me,valor,temp;
-	char *val;
-	
-	while(read(fd,val,sizeof(int))>0){
-		
-		valor = atoi(val);
-			
-		ini = 0;
-		fin = k-1;
-		me = (fin - ini)/2;
-			
-		if(valor > keys[k-1]){
-				write(files[k-1], valor, sizeof(int));
-				sizes[k-1]++;
-				continue;
+/*calculates the keys for the current recursion using samples*/
+void select_keys(int *keys, int fd,int pos, int max){
+		int p=a;
+    int i,j,random_integer;
+    int samples[(p+1)*k];
+    srand((unsigned)time(0));    
+    for(i=1;i < ((p+1)*k -1);i++){
+      random_integer = rand() % (N*sizeof(int)/B);
+      printf("random integer %d\n",random_integer);
+      lseek(fd, random_integer*B, SEEK_SET);
+      if((j = read(fd, (void *)&(samples[i]),sizeof(int)))== -1)
+        perror("fail");
+    }
+    lseek(fd, 0, SEEK_SET);
+    for(i=0;i<(p+1)*k;i++)
+			printf("samples %d vale %d\n",i,samples[i]);
+    sort(samples,0,(p+1)*k); 
+    for(i=1,j=pos;i < k ;i++){
+      keys[j++] = samples[(p+1)*i];
+    }
+    
+    keys[j] = max;
+}
+
+void newKfiles(int narchivos,struct bucket *prefiles){
+
+	struct bucket kfiles[k*narchivos];
+	int kkeys[(k*narchivos)+1];
+	kkeys[0] = INT_MIN;
+	int i,j,c = 0;
+	int nivel = prefiles[0].nivel+1;
+
+	for(i = 0; i < narchivos ; i++){
+		kfiles[c].size=0;
+		for(j = 0; j < narchivos; j++){
+			memset(&kfiles[c].name[0],0,sizeof(&kfiles[c].name[0]));
+			sprintf(&kfiles[c].name[0], "%s%d",prefiles[i].name ,j+1);
+			kfiles[c].file = open(&kfiles[n].name[0], O_RDWR | O_CREAT, S_IRWXU|S_IRWXG|S_IRWXO);
+			c++;
 		}
-			
+	}
+		
+	for(i = 0; i < narchivos; i++){
+		if(prefiles[i].size==0)
+			continue;
+		
+		select_keys(kkeys,prefiles[i].file,(k*i)+1,prefiles[i].max);
+		printf("llenando subarchivos desde %d hasta %d\n",i*k,(i+1)*k-1);
+		fill_files(prefiles[i].file,i*k,(i+1)*k-1,kfiles,kkeys);
+		printf("subarchivos llenados\n");
+		close(prefiles[i].file);
+		remove(prefiles[i].name);
+		kfiles[i].nivel = nivel;
+	}
+
+	for(i = 0; i < (k*narchivos)+1; i++)
+		printf("key %d vale %d\n",i,kkeys[i]);	
+		
+	
+	fill_files(filefd,0,k*narchivos,kfiles,kkeys);
+	
+	for(i = 0 ; i < k*narchivos ; i++){
+		close(kfiles[i].file);
+		if(kfiles[i].size==0){
+			remove(kfiles[i].name);
+		}
+	}
+
+	
+}
+
+int ifsuperam(struct bucket *files){
+	
+	int i;
+	
+	for(i = 0; i < k; i++){
+		if(!(files[i].size > 4*M))
+			return 0;
+	}
+		
+	return 1;
+	
+}
+
+void fill_files(int fd, int inicio, int final, struct bucket *archivos,int *keys){
+	
+	int i,ini,fin,me,valor;
+	
+	while(read(fd,&valor,sizeof(int))>0){
+		printf("valor= %d\n",valor);		
+		ini = inicio;
+		fin = final;
+		me = (fin + ini)/2;
+		
 		while(1){
-			
 			if((fin - ini) == 1){
-				write(files[ini], valor, sizeof(int));
-				sizes[ini]++;
+				write(archivos[ini].file, (void *)&valor, sizeof(int));
+				archivos[ini].size++;
+				printf("escribiendo en archivo %d\n",ini);		
 				break;
 			}
 			
 			if(valor == keys[me]){
-				write(files[ini], valor, sizeof(int));
-				sizes[me]++;
+				write(archivos[me-1].file, (void *)&valor, sizeof(int));
+				archivos[me-1].size++;
+				printf("escribiendo en archivo %d\n",me-1);		
 				break;
 			}
 		
 			if(valor < keys[me]){
 				fin = me;
-				me = (fin - ini)/2;
+				me = (fin + ini)/2;
 			}
 			else{
 				ini = me;
-				me = (fin - ini)/2;
+				me = (fin + ini)/2;
 			}
 			
+		}
+		
+		if(ifsuperam(archivos)){
+			printf("nos pasamos\n");
+			int j,narchivos=1;
+			for(j = 0; j < k; j++){
+				archivos[j].min = keys[j];
+				archivos[j].max = keys[j+1];
+			}
+			for(j = 0; j < archivos[0].nivel;j++)
+				narchivos*=k;
+			newKfiles(k,archivos);
+			return;
 		}
 		
 	}
 	
 }
 
-void sort_files(int fd){
+void samplesort(int fd){
 	
-	/*hacer quickaux de un arreglo de elementos del archivo*/
-	int i ;
-	for(i = 0; i < k; i++){		
-		int bucket[sizes[i]];
-		read(files[i], (void *)bucket,sizeof(int)*sizes[i]);
-		sort(bucket,0,sizes[i]);
-		/*se podria escribir altiro en el archivo final*/
+	filefd=fd;
+	
+	char name_file[50];
+	int keys[k+1];
+	struct bucket files[k];
+	
+	int i;
+
+	keys[0]=INT_MIN;	
+	select_keys(keys,filefd,1,INT_MAX);
+
+	/*crear archivos*/
+	for(i = 0; i < k ; i++ ){
+		files[i].size = 0;
+		memset(&files[i].name[0],0,sizeof(&files[i].name));
+		sprintf(files[i].name, "resultados/buffer%d", i+1);
+		files[i].file = open(files[i].name, O_RDWR | O_CREAT, S_IRWXU|S_IRWXG|S_IRWXO);
+		files[i].nivel = 1;
 	}
+	
+		
+	/*aqui hay que empezar a meter los N numeros*/	
+	
+	for(i = 0 ; i < k+1 ; i++)
+		printf("key %d vale %d\n",i,keys[i]);
+		
+	fill_files(filefd,0,k,files,keys);
+	
+	for(i = 0 ; i < k ; i++){
+		close(files[i].file);
+		if(files[i].size==0){
+			remove(files[i].name);
+		}
+	}
+
+}
+
+int main(){
+	
+	int fd;
+
+	fd = open("test_bucket2", O_RDWR);
+	
+	samplesort(fd);
+	
 }
