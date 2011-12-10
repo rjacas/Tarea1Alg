@@ -1,4 +1,3 @@
-#define DEBUG
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -7,9 +6,7 @@
 #include "../algorithms/m_mergesort.h"
 #include "../utils/test_utils.h"
 
-#define N_ELEMS 24
 main(int argc, char **argv) {
-    int foo[N_ELEMS];
     int i, fd;
     int size;
     char *endptr = NULL;

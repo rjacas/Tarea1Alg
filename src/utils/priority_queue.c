@@ -1,5 +1,9 @@
+#ifdef DEBUG
+#include <stdio.h>
+#endif
 #include <stdlib.h>
 #include "priority_queue.h"
+
 
 struct priority_queue *pq_new(int size) {
     struct priority_queue *p;
@@ -20,7 +24,7 @@ void pq_insert(struct priority_queue *pq, int new_elem, int origin) {
     struct pair tmp;
 
 #ifdef DEBUG
-    if ((pq->elems[0].i1 + 1) == pq->elems[0].i2) {
+    if ((pq->elems[0].i1) == pq->elems[0].i2) {
         printf("Max elems in priority queue exceeded.\n");
         exit(1);
     }

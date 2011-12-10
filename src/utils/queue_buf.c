@@ -1,3 +1,6 @@
+#ifdef DEBUG
+#include <stdio.h>
+#endif
 #include <stdlib.h>
 #include "queue_buf.h"
 
@@ -24,7 +27,7 @@ int qb_refill(struct queue_buf *q, int fd) {
 int qb_refill_max(struct queue_buf *q, int fd, int max_bytes) {
    int ret;
 
-   if (max_bytes >= q->n_elems) return qb_refill(q, fd);
+   if (max_bytes >= q->size * sizeof(int)) return qb_refill(q, fd);
 
    ret = read(fd, (void *)q->elems, max_bytes);
 

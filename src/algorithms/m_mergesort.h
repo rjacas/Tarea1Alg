@@ -47,11 +47,11 @@ void m_mergesort(int fd);
    than l, recursion is stopped and the chunks are sorted in memory.
    
 Params:
-    fd(IN/OUT) - the file descriptor of the file to sort. Its position is implicit.
-    size -  size of the chunk of the file to sort, in sectors.
-    file_pos - position in the file to start reading from, in bytes.
+    fd(IN/OUT) - the file descriptor of the file to sort.
+    start -  starting position of the chunk of the file to sort, in integers.
+    size - size of the chunk of the file to sort, in integers.
 */
-void mergesort(int fd, int size, int file_pos);
+void mergesort(int fd, int fd2, int level, int size, int start);
 
 void m_quicksort(struct queue_buf *q);
 
