@@ -48,6 +48,8 @@ void s_samplesort(int fd,int floor, off_t size){
       exit(1);
     }
     for(j = 0; j < M ; j++ ){
+      if(qb_empty(buff))
+        break;
       cur = qb_dequeue(buff);
       i = bucket(cur,keys,k-1);
       if((ret =  write(files[i],(void *)&cur,sizeof(int)))== -1){
