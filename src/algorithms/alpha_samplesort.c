@@ -98,6 +98,7 @@ void s_samplesort(int fd,int floor, off_t size){
        exit(1);
       }
       quicksort(buff);
+      lseek(files[i],0,SEEK_SET);
       qb_flush(buff,files[i]);
       close(files[i]);
     }
