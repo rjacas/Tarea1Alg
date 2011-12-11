@@ -5,13 +5,14 @@
 #include "../utils/sort_utils.h"
 #include "../utils/test_utils.h"
 
-#define ceildiv(a,b) ((a) + (b) - 1 ) / (b);
-
+#define ceildiv(a,b) ((a) + (b) - 1 ) / (b)
+#define min(a,b) ((a) - (b) < 1 ) ? (a) : (b)
+#define max(a,b) ((a) - (b) < 1 ) ? (b) : (a)
 
 void s_samplesort(int fd,int floor, off_t size){
   int k;
-  k = ceildiv(size,M);
-  printf("nivel %d k %d\n",floor,k);
+  k = min(ceildiv(size,M),ceildiv(M,B));
+
   if(k < 1){
     perror("this is going bad\n");
     exit(1);
@@ -28,7 +29,7 @@ void s_samplesort(int fd,int floor, off_t size){
   sizes = (int *)malloc(sizeof(int)*k);
   keys = (int *)malloc(sizeof(int)*(k+1));    
   file_buff = (struct queue_buf **)malloc(sizeof(struct queue_buf *)*k);
-  select_keys(keys,fd,size);
+  select_keys(keys,fd,size,k);
   
 
   for(i = 0; i < k; i++){
@@ -91,7 +92,6 @@ void s_samplesort(int fd,int floor, off_t size){
         perror("aca");
         exit(1);
       } 
-      printf("name %s size %d\n",name_file,sizes[i]);
       if((ret1 = qb_refill(buff,files[i]))== -1){
         printf("buffer%d_%d fail2\n",floor, i);
        perror("aca");
@@ -145,24 +145,24 @@ int bucket(int comp, int *key, off_t size){
 }
 
 
-void select_keys(int *keys, int fd, off_t size){
-    int a,k,i,j,random_integer;
-    double b;
+void select_keys(int *keys, int fd, off_t size, int k){
+    int a,i,j,random1,random2;
+    off_t le_random,random_integer;
     int *samples;
+    a = ceildiv(ceil(log(k)),ceil(log(2)));
 
-    k = ceildiv(size,M);
-    b =ceildiv(log(k),log(2));
-    a = (int) b;
-    if(k < 1)
-      perror("this is going bad\n");
     samples = (int*)malloc(sizeof(int)*((a+1)*k));
     keys[0] = INT_MIN;
     keys[k] = INT_MAX;
     srand((unsigned)time(0));
-    
-    for(i=0;i < ((a+1)*k -1);i++){
-				random_integer = rand() % (size*sizeof(int)/B);
-				lseek(fd, random_integer*B, SEEK_SET);
+      
+    for(i=0;i < (a+1)*k ;i++){
+        random1 = rand(); 
+        random2 = rand();
+        le_random = random1;
+        le_random = le_random << 32 | random2;
+        random_integer = le_random % (size/B);
+				lseek(fd, sizeof(int)*random_integer, SEEK_SET);
 				if((j = read(fd, (void *)&(samples[i]),sizeof(int)))== -1){
 					printf("fail4\n");
 					exit(1);
