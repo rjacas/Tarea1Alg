@@ -1,3 +1,4 @@
+#include <unistd.h>
 #include "queue_buf.h"
 
 struct sort_results {
