@@ -16,6 +16,7 @@ void s_samplesort(int fd,int floor, off_t size){
     exit(1);
   }
   struct queue_buf *buff;
+  struct queue_buf **file_buff;
   int *files, *sizes, *keys;
   int i,j,cur,r,ret,ret1;
   char name_file[50];
@@ -25,13 +26,12 @@ void s_samplesort(int fd,int floor, off_t size){
   files = (int *)malloc(sizeof(int)*k);
   sizes = (int *)malloc(sizeof(int)*k);
   keys = (int *)malloc(sizeof(int)*(k+1));    
-  
+  file_buff = (struct queue_buf **)malloc(sizeof(struct queue_buf *)*k);
   select_keys(keys,fd,size);
 
   for(i = 0; i < k; i++){
+    file_buff[i] = qb_new(B);
 		sizes[i] = 0;
-  }
-  for(i = 0; i < k ; i++ ){
     sprintf(name_file, "buffer%d_%d\0", floor,i);
     if((files[i] = open(name_file, O_RDWR | O_CREAT, S_IRWXU|S_IRWXG|S_IRWXO))== -1){
       printf("buffer%d_%d fail1\n",floor, i);
@@ -45,17 +45,18 @@ void s_samplesort(int fd,int floor, off_t size){
       perror("aca");
       exit(1);
     }
-    for(j = 0; j < M ; j++ ){
-      if(qb_empty(buff))
-        break;
+    while(!qb_empty(buff)){
       cur = qb_dequeue(buff);
       i = bucket(cur,keys,k-1);
-      if((ret =  write(files[i],(void *)&cur,sizeof(int)))== -1){
-        printf("buffer%d_%d fail3\n",floor, i);
-        perror("aca");
-        exit(1);
+      qb_enqueue(file_buff[i], cur);
+      if(qb_full(file_buff[i])){
+        if((ret = qb_flush(file_buff[i],files[i]))== -1){
+          printf("buffer%d_%d fail3\n",floor, i);
+          perror("aca");
+          exit(1);
+        }
+        sizes[i]+=B;
       }
-      sizes[i]++;;
     }
     r+=M;
      
@@ -69,6 +70,11 @@ void s_samplesort(int fd,int floor, off_t size){
       remove(name_file);
     }
     else if(sizes[i] <= M){
+      if((files[i] = open(name_file, O_RDWR | O_CREAT, S_IRWXU|S_IRWXG|S_IRWXO))== -1){
+        printf("buffer%d_%d fail1\n",floor, i);
+        perror("aca");
+        exit(1);
+      } 
       if((ret1 = qb_refill(buff,files[i]))== -1){
         printf("buffer%d_%d fail2\n",floor, i);
        perror("aca");
@@ -90,6 +96,9 @@ void s_samplesort(int fd,int floor, off_t size){
       remove(name_file);
     }
   }
+  for(i = 0; i < k; i++)
+     qb_free(file_buff[i]);
+  free(file_buff);
   qb_free(buff);
   free(keys);
   free(files);
