@@ -46,11 +46,11 @@ void s_samplesort(int fd,int floor, off_t size){
       exit(1);
     }
     
-    if (empty(buff)) break;
+    if (qb_empty(buff)) break;
     
     while(!qb_empty(buff)){
       cur = qb_dequeue(buff);
-      i = bucket(cur,keys,k-1);
+      i = bucket(cur,keys,k+1);
       qb_enqueue(file_buff[i], cur);
       if(qb_full(file_buff[i])){
       	sizes[i] += file_buff[i]->n_elems;
@@ -65,7 +65,7 @@ void s_samplesort(int fd,int floor, off_t size){
   
   /* Pueden quedar restos en los bufs. Hay que vaciar todo */
   for (i = 0; i < k; i++) {
-  	if (!empty(file_buff[i])) {
+  	if (!qb_empty(file_buff[i])) {
   	    sizes[i] += file_buff[i]->n_elems;
   	    qb_flush(file_buff[i], files[i]);
   	}
@@ -126,15 +126,13 @@ int bucket(int comp, int *key, off_t size){
   min = 0;
   max = size - 1;
   do{
-    mid =(min+max)/2;
+    mid =ceildiv(min+max,2);
     if(comp > key[mid])
       min = mid + 1;
     else
       max = mid - 1;
   }
   while((key[mid] != comp) && (min <= max));
-  if(key[mid] != comp)
-    return mid+1;
   return mid;  
 }
 
