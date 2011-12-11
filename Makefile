@@ -8,12 +8,12 @@ bin/run_mergesort: src/scripts/run_mergesort.c src/utils/sort_utils.c src/utils/
 	gcc -D_FILE_OFFSET_BITS=64 src/utils/sort_utils.c src/utils/priority_queue.c src/utils/queue_buf.c src/algorithms/m_mergesort.c src/scripts/run_mergesort.c -o bin/test_mergesort 
 
 bin/make_rand: src/scripts/make_rand.c
-	gcc src/scripts/make_rand.c -o bin/make_rand
+	gcc -D_FILE_OFFSET_BITS=64 src/scripts/make_rand.c -o bin/make_rand
 
 tests: tests/test_samplesort tests/test_mergesort tests/test_priority_queue tests/test_queue_buf tests/test_mixed tests/test_flush
 
 tests/test_mergesort: src/utils/sort_utils.c src/utils/sort_utils.h src/utils/test_utils.c src/utils/priority_queue.c src/utils/priority_queue.h src/utils/queue_buf.c src/utils/queue_buf.h src/algorithms/m_mergesort.c src/algorithms/m_mergesort.h src/tests/test_mergesort.c
-	gcc -g -D_FILE_OFFSET_BITS=64 -DDEBUG src/tests/test_mergesort.c src/utils/sort_utils.c src/utils/test_utils.c src/utils/priority_queue.c src/utils/queue_buf.c src/algorithms/m_mergesort.c -o tests/test_
+	gcc -g -D_FILE_OFFSET_BITS=64 -DDEBUG src/tests/test_mergesort.c src/utils/sort_utils.c src/utils/test_utils.c src/utils/priority_queue.c src/utils/queue_buf.c src/algorithms/m_mergesort.c -o tests/test_mergesort
 
 tests/test_samplesort: src/utils/test_utils.c src/utils/priority_queue.c src/utils/priority_queue.h src/utils/queue_buf.c src/utils/queue_buf.h src/algorithms/samplesort.c src/algorithms/samplesort.h src/tests/test_samplesort.c
 	gcc -g src/utils/test_utils.c src/tests/test_samplesort.c src/utils/priority_queue.c src/utils/queue_buf.c src/algorithms/samplesort.c -o tests/test_samplesort
