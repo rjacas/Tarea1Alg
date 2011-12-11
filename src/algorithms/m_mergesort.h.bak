@@ -3,7 +3,9 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "../utils/sort_utils.h"
+#include "../utils/queue_buf.h"
+#include "../utils/priority_queue.h"
+
 #ifdef ASDF
 /* Amount of elements that will fit in memory */
 #define M 26214400
@@ -29,18 +31,15 @@
 #define k 4
 #endif
 /* 
-   Uses k-ary mergesort to sort a file, using at most l blocks
+   Uses in-place k-ary mergesort to sort a file, using at most l blocks
    per queue.
 
 Params:
-    fd1(IN/OUT) - the file descriptor for the file to sort. It must be at the start 
+    fd(IN/OUT) - the file descriptor of the file to sort. It must be at the start 
     of the file.
-    fd2(IN/OUT) - the file descriptor for the auxiliary file to use. 
-    k(IN) - number of queue_buf structures to use.
-    N(IN) - the number of elements in the file to sort.
 
 */
-struct sort_results  m_mergesort(int fd1, int fd2, int k, off_t N);
+void m_mergesort(int fd);
 
 /* 
    Recursive function for m_mergesort. It divides the current chunk of the
@@ -48,12 +47,14 @@ struct sort_results  m_mergesort(int fd1, int fd2, int k, off_t N);
    than l, recursion is stopped and the chunks are sorted in memory.
    
 Params:
-    fd1(IN/OUT) - the file descriptor of the file to sort.
-    fd2(IN/OUT) - the file descriptor of the auxiliary file to use.
-    level(IN) - current recursion level
-    start(IN) -  starting position of the chunk of the file to sort, in integers.
-    size(IN) - size of the chunk of the file to sort, in integers.
+    fd(IN/OUT) - the file descriptor of the file to sort.
+    start -  starting position of the chunk of the file to sort, in integers.
+    size - size of the chunk of the file to sort, in integers.
 */
-void mergesort(int fd, int fd2, int level, off_t start, off_t size);
+void mergesort(int fd, int fd2, int level, int size, int start);
+
+void m_quicksort(struct queue_buf *q);
 
 
+void swap(int *a, int *b);
+void sort(int *arr, int beg, int end);

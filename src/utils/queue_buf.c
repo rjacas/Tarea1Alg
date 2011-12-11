@@ -87,3 +87,8 @@ int qb_empty(struct queue_buf *q) {
 int qb_full(struct queue_buf *q) {
     return (q->n_elems == q->size)? TRUE : FALSE;
 }
+
+void qb_free(struct queue_buf *q) {
+    free(q->elems);
+    free(q);
+}

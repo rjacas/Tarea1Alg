@@ -155,4 +155,7 @@ Returns:
  
 int qb_full(struct queue_buf *q);
 
+/* Frees a queue_buf */
+void qb_free(struct queue_buf *q);
+
 #endif
