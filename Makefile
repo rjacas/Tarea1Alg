@@ -1,11 +1,14 @@
-bin: bin/run_mergesort
+bin: bin/run_mergesort bin/make_rand
 	cp src/scripts/*.sh bin/
 
 tests: tests/test_mergesort tests/test_samplesort tests/test_priority_queue tests/test_queue_buf tests/test_mixed
 	cp src/scripts/*.sh tests/
 
 bin/run_mergesort: src/scripts/run_mergesort.c src/utils/sort_utils.c src/utils/sort_utils.h src/utils/priority_queue.c src/utils/priority_queue.h src/utils/queue_buf.c src/utils/queue_buf.h src/algorithms/m_mergesort.c src/algorithms/m_mergesort.h
-	gcc -g -DDEBUG -D_FILE_OFFSET_BITS=64 src/utils/sort_utils.c src/utils/priority_queue.c src/utils/queue_buf.c src/algorithms/m_mergesort.c src/scripts/run_mergesort.c -o bin/test_mergesort 
+	gcc -D_FILE_OFFSET_BITS=64 src/utils/sort_utils.c src/utils/priority_queue.c src/utils/queue_buf.c src/algorithms/m_mergesort.c src/scripts/run_mergesort.c -o bin/test_mergesort 
+
+bin/make_rand: src/scripts/make_rand.c
+	gcc src/scripts/make_rand.c -o bin/make_rand
 
 tests: tests/test_samplesort tests/test_mergesort tests/test_priority_queue tests/test_queue_buf tests/test_mixed tests/test_flush
 
@@ -26,6 +29,7 @@ tests/test_flush: src/utils/queue_buf.c src/utils/queue_buf.h src/tests/test_flu
 
 tests/test_mixed: src/tests/test_mixed.c src/utils/test_utils.h src/utils/test_utils.c
 	gcc -g -D_FILE_OFFSET_BITS=64 -DDEBUG src/utils/test_utils.c src/tests/test_mixed.c -o tests/test_mixed
+
 
 clean:
 	rm -f tests/test*

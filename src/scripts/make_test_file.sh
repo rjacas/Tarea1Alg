@@ -1,9 +1,9 @@
-#!/bin/sh
-
-SIZE="80"
+#!/bin/bash
 
 if [ $1 ]; then
     SIZE=$1
+else
+    exit 1
 fi
 
-head -c$SIZE /dev/urandom > test_file
+./make_rand $((SIZE/512))

@@ -5,9 +5,9 @@
 
 #define ceildiv(a,b) ((a) + (b) - 1 ) / (b);
 
-int B = 2;
-int M = 24;
-int m = 12; //  M/B
+int B = 128;
+int M = 26214400;
+int m= 26214400 / 128;
 int l; // = m / k = length of buffers, in blocks
 off_t min_size; //l * B;
 int k;
@@ -21,10 +21,10 @@ struct sort_results results;
 struct sort_results m_mergesort(int fd1, int fd2, int user_k, off_t N){
     int i, aux;
     results.io_acc = results.io_rand = 0;
-    l = 4; // FIXME Should be m / k
-    min_size = l * B;
     k = user_k;
     heap = pq_new(k);
+    l = m/k; 
+    min_size = l * B;
     bufs = (struct queue_buf **) malloc(k * sizeof(struct queue_buf *));
     for (i = 0; i < k; i++){
         bufs[i] = qb_new(l * B);
@@ -46,7 +46,7 @@ void mergesort(int fd1, int fd2, int level, off_t start, off_t size) {
     off_t done[k];
     off_t q_size[k];
     off_t new_size; 
-    int written, aux, aux2;
+    off_t written, aux, aux2;
     int value;
     int qb_idx;
     int fd_in, fd_out;
