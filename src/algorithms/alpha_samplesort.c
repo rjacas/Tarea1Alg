@@ -7,8 +7,6 @@
 
 #define ceildiv(a,b) ((a) + (b) - 1 ) / (b);
 
-void m_quicksort(int *buf, off_t size);
-
 
 void s_samplesort(int fd,int floor, off_t size){
   int k;
@@ -99,7 +97,7 @@ void s_samplesort(int fd,int floor, off_t size){
 }
 
 
-/*return the bucket corresponding to comp*/
+
 int bucket(int comp, int *key, off_t size){
   int min,max,mid,x;
   min = 0;
@@ -117,7 +115,7 @@ int bucket(int comp, int *key, off_t size){
   return mid;  
 }
 
-/*calculates the keys for the current recursion using samples*/
+
 void select_keys(int *keys, int fd, off_t size){
     int a,k,i,j,random_integer;
     double b;
@@ -143,15 +141,9 @@ void select_keys(int *keys, int fd, off_t size){
     }
 
     lseek(fd, 0, SEEK_SET);
-    m_quicksort(samples,(a+1)*k); 
+    alpha_quicksort(samples,(a+1)*k); 
     for(i=1;i < k;i++){
       keys[i] = samples[(a+1)*i];
     }
-}
-
-
-
-//utilities
-void m_quicksort(int *buf, off_t size){
-  sort(buf, 0, size);
+    free(samples);
 }
