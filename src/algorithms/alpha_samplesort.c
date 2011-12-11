@@ -5,12 +5,12 @@
 #include "../utils/sort_utils.h"
 #include "../utils/test_utils.h"
 
-#define ceildiv(a,b) ((a) + (b) - 1 ) / (b);
-
+#define ceildiv(a,b) ((a) + (b) - 1 ) / (b)
+#define min(X,Y) ((X) < (Y) ? (X) : (Y))
 
 void s_samplesort(int fd,int floor, off_t size){
   int k;
-  k = ceildiv(size,M);
+  k = min(ceildiv(size,M),ceildiv(M,B));
   if(k < 1){
     perror("this is going bad\n");
     exit(1);
@@ -27,7 +27,7 @@ void s_samplesort(int fd,int floor, off_t size){
   sizes = (int *)malloc(sizeof(int)*k);
   keys = (int *)malloc(sizeof(int)*(k+1));    
   file_buff = (struct queue_buf **)malloc(sizeof(struct queue_buf *)*k);
-  select_keys(keys,fd,size);
+  select_keys(keys,fd,size,k);
 
   for(i = 0; i < k; i++){
     file_buff[i] = qb_new(B);
@@ -126,25 +126,26 @@ int bucket(int comp, int *key, off_t size){
   min = 0;
   max = size - 1;
   do{
-    mid =ceildiv(min+max,2);
+    mid =(min+max)/2;
+    if((max-min)==1)
+			return min;
     if(comp > key[mid])
-      min = mid + 1;
+      min = mid;
     else
-      max = mid - 1;
+      max = mid;
   }
   while((key[mid] != comp) && (min <= max));
+  if(key[mid] != comp)
+    return mid+1;
   return mid;  
 }
 
 
-void select_keys(int *keys, int fd, off_t size){
-    int a,k,i,j,random_integer;
+void select_keys(int *keys, int fd, off_t size, int k){
+    int a,i,j,random_integer;
     double b;
     int *samples;
-
-    k = ceildiv(size,M);
-    b =ceildiv(log(k),log(2));
-    a = (int) b;
+    a =ceildiv(ceil(log(k)),ceil(log(2)));
     if(k < 1)
       perror("this is going bad\n");
     samples = (int*)malloc(sizeof(int)*((a+1)*k));
@@ -152,7 +153,7 @@ void select_keys(int *keys, int fd, off_t size){
     keys[k] = INT_MAX;
     srand((unsigned)time(0));
     
-    for(i=1;i < ((a+1)*k -1);i++){
+    for(i=0;i < ((a+1)*k);i++){
       random_integer = rand() % (size*sizeof(int)/B);
       lseek(fd, random_integer*B, SEEK_SET);
       if((j = read(fd, (void *)&(samples[i]),sizeof(int)))== -1){
