@@ -39,31 +39,44 @@ void s_samplesort(int fd,int floor, off_t size){
       exit(1);
     }
   }
-  while(r < size){
+  while(1){
     if((ret1 = qb_refill(buff,fd))== -1){
       printf("buffer%d_%d fail2\n",floor, i);
       perror("aca");
       exit(1);
     }
+    
+    if (empty(buff)) break;
+    
     while(!qb_empty(buff)){
       cur = qb_dequeue(buff);
       i = bucket(cur,keys,k-1);
       qb_enqueue(file_buff[i], cur);
       if(qb_full(file_buff[i])){
+      	sizes[i] += file_buff[i]->n_elems;
         if((ret = qb_flush(file_buff[i],files[i]))== -1){
           printf("buffer%d_%d fail3\n",floor, i);
           perror("aca");
           exit(1);
         }
-        sizes[i]+=B;
       }
-    }
-    r+=M;
-     
+    }     
   }
-
-  for(i = 0; i < k; i++)
-    close(files[i]);
+  
+  /* Pueden quedar restos en los bufs. Hay que vaciar todo */
+  for (i = 0; i < k; i++) {
+  	if (!empty(file_buff[i])) {
+  	    sizes[i] += file_buff[i]->n_elems;
+  	    qb_flush(file_buff[i], files[i]);
+  	}
+  	close(files[i]);
+  	qb_free(file_buff[i]);
+  }
+  
+  free(file_buff);
+      
+  free(keys);
+  
   for(i = 0; i < k; i++){
     if(sizes[i] == 0){	  
       sprintf(name_file, "buffer%d_%d\0", floor,i);
@@ -82,8 +95,14 @@ void s_samplesort(int fd,int floor, off_t size){
       }
       quicksort(buff);
       qb_flush(buff,files[i]);
+      close(files[i]);
     }
-    else{
+  }
+  
+  qb_free(buff);
+  
+  for (i = 0; i < k; i++) {
+    if (sizes[i] > M) {
       sprintf(name_file, "buffer%d_%d\0", floor,i);
       if((files[i] = open(name_file, O_RDWR | O_CREAT, S_IRWXU|S_IRWXG|S_IRWXO))== -1){
         printf("buffer%d_%d fail1\n",floor, i);
@@ -96,13 +115,8 @@ void s_samplesort(int fd,int floor, off_t size){
       remove(name_file);
     }
   }
-  for(i = 0; i < k; i++)
-     qb_free(file_buff[i]);
-  free(file_buff);
-  qb_free(buff);
-  free(keys);
+  free(sizes);   
   free(files);
-  free(sizes);        
 }
 
 
