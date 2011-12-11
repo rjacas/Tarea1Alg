@@ -121,8 +121,8 @@ void select_keys(int *keys, int fd, off_t size){
     double b;
     int *samples;
 
-    k = size/M;
-    b =(log(k)/log(2));
+    k = ceildiv(size,M);
+    b =ceildiv(log(k),log(2));
     a = (int) b;
     if(k < 1)
       perror("this is going bad\n");
