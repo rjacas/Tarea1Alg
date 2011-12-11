@@ -1,5 +1,10 @@
 #include "sort_utils.h"
 
+
+void alpha_quicksort(int *buf, off_t size){
+  sort(buf, 0, size);
+}
+
 void quicksort(struct queue_buf *q){
     int *buff;
     int size;
