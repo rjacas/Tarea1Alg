@@ -8,8 +8,8 @@
 #include <limits.h>
 
 
-//N 384
-#define M 16
+//N 128
+#define M 32
 #define B 2
 
 
@@ -18,7 +18,7 @@
 void s_samplesort(int fd,int floor,off_t size);
 
 /*calculates the keys for the current recursion using samples*/
-void select_keys(int *keys, int fd,off_t size);
+void select_keys(int *keys, int fd,off_t size, int k);
 
 
 /*return the bucket corresponding to comp*/

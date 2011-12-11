@@ -7,7 +7,7 @@
 #include "../utils/test_utils.h"
 
 #define N_ELEMS 24
-#define N 384
+#define N 32
 main(int argc, char **argv) {
     int foo[N_ELEMS];
     int i, fd;
