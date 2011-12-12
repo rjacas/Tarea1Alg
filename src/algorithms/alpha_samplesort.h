@@ -6,16 +6,22 @@
 #include <unistd.h>
 #include <math.h>
 #include <limits.h>
+#include "../utils/sort_utils.h"
 
 
-//N 128
-#define M 32
-#define B 2
+/* Amount of elements that will fit in memory */
+#define M 26214400
+
+/* Amount of elements to be sorted */
+#define N 6710886400
+
+/* Amount of elements that fit in a disk sector */
+#define B 128
 
 
 
 
-void s_samplesort(int fd,int floor,off_t size,char *base_name);
+void s_samplesort(int fd,off_t size,char *base_name,int k);
 
 /*calculates the keys for the current recursion using samples*/
 void select_keys(int *keys, int fd,off_t size, int k);

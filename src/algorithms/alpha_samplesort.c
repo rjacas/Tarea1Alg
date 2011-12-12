@@ -2,16 +2,15 @@
 
 #include "../utils/queue_buf.h"
 #include "../utils/priority_queue.h"
-#include "../utils/sort_utils.h"
 #include "../utils/test_utils.h"
 
 #define ceildiv(a,b) ((a) + (b) - 1 ) / (b)
 #define min(a,b) ((a) - (b) < 1 ) ? (a) : (b)
 #define max(a,b) ((a) - (b) < 1 ) ? (b) : (a)
 
-void s_samplesort(int fd, off_t size,char *base_name){
-  int k;
-  k = min(ceildiv(size,M),ceildiv(M,B));
+void s_samplesort(int fd, off_t size,char *base_name,int k){
+  //int k;
+  //k = min(ceildiv(size,M),ceildiv(M,B));
 
   if(k < 1){
     perror("this is going bad\n");
@@ -114,7 +113,7 @@ void s_samplesort(int fd, off_t size,char *base_name){
         perror("aca");
         exit(1);
       }     
-      s_samplesort(files[i],sizes[i],name_file);
+      s_samplesort(files[i],sizes[i],name_file,k);
       close(files[i]);
       remove(name_file);
     }
