@@ -15,7 +15,7 @@
 
 
 
-void s_samplesort(int fd,int floor,off_t size);
+void s_samplesort(int fd,int floor,off_t size,char *base_name);
 
 /*calculates the keys for the current recursion using samples*/
 void select_keys(int *keys, int fd,off_t size, int k);

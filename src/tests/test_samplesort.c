@@ -7,7 +7,7 @@
 #include "../utils/test_utils.h"
 
 #define N_ELEMS 24
-#define N 32
+#define N 128
 main(int argc, char **argv) {
     int foo[N_ELEMS];
     int i, fd;
@@ -27,7 +27,7 @@ main(int argc, char **argv) {
 
     printf("Sorting...\n");
     fd = open(argv[1], O_RDWR);
-    s_samplesort(fd, 0, N);
+    s_samplesort(fd, 0, N,"");
 
     lseek(fd, 0, SEEK_SET);
     //print_file_integers(fd);
