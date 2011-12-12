@@ -35,10 +35,9 @@ void s_samplesort(int fd,int floor, off_t size,char *base_name){
   for(i = 0; i < k; i++){
     file_buff[i] = qb_new(B);
 		sizes[i] = 0;
-    //~ sprintf(name_file, "buffer%d_%d\0", floor,i);
     sprintf(name_file, "%s%d\0", base_name,i);
     if((files[i] = open(name_file, O_RDWR | O_CREAT, S_IRWXU|S_IRWXG|S_IRWXO))== -1){
-      printf("buffer%d_%d fail1\n",floor, i);
+      printf("%s%d fail1\n", base_name,i);
       perror("aca");
       exit(1);
     }
@@ -46,7 +45,7 @@ void s_samplesort(int fd,int floor, off_t size,char *base_name){
   j=1;
   while(1){
     if((ret1 = qb_refill(buff,fd))== -1){
-      printf("buffer%d_%d fail2\n",floor, i);
+      printf("%s%d fail2\n", base_name,i);
       perror("aca");
       exit(1);
     }
@@ -60,7 +59,7 @@ void s_samplesort(int fd,int floor, off_t size,char *base_name){
       if(qb_full(file_buff[i])){
       	sizes[i] += file_buff[i]->n_elems;
         if((ret = qb_flush(file_buff[i],files[i]))== -1){
-          printf("buffer%d_%d fail3\n",floor, i);
+          printf("%s%d fail3\n", base_name,i);
           perror("aca");
           exit(1);
         }
@@ -83,21 +82,22 @@ void s_samplesort(int fd,int floor, off_t size,char *base_name){
   free(keys);
   
   for(i = 0; i < k; i++){
+		sprintf(name_file, "%s%d\0", base_name,i);
     if(sizes[i] == 0){	  
-      //~ sprintf(name_file, "buffer%d_%d\0", floor,i);
       sprintf(name_file, "%s%d\0", base_name,i);
       remove(name_file);
     }
     else if(sizes[i] <= M){
+			sprintf(name_file, "%s%d\0", base_name,i);
       if((files[i] = open(name_file, O_RDWR | O_CREAT, S_IRWXU|S_IRWXG|S_IRWXO))== -1){
-        printf("buffer%d_%d fail1\n",floor, i);
+        printf("%s%d fail1\n", base_name,i);
         perror("aca");
         exit(1);
       } 
       if((ret1 = qb_refill(buff,files[i]))== -1){
-        printf("buffer%d_%d fail2\n",floor, i);
-       perror("aca");
-       exit(1);
+        printf("%s%d fail2\n", base_name,i);
+				perror("aca");
+				exit(1);
       }
       quicksort(buff);
       lseek(files[i],0,SEEK_SET);
@@ -110,7 +110,6 @@ void s_samplesort(int fd,int floor, off_t size,char *base_name){
   
   for (i = 0; i < k; i++) {
     if (sizes[i] > M) {
-      //~ sprintf(name_file, "buffer%d_%d\0", floor,i);
       sprintf(name_file, "%s%d\0", base_name,i);
       if((files[i] = open(name_file, O_RDWR | O_CREAT, S_IRWXU|S_IRWXG|S_IRWXO))== -1){
         printf("buffer%d_%d fail1\n",floor, i);
@@ -118,7 +117,6 @@ void s_samplesort(int fd,int floor, off_t size,char *base_name){
         exit(1);
       }     
       s_samplesort(files[i],floor+1,sizes[i],name_file);
-      //~ sprintf(name_file, "buffer%d_%d\0", floor,i);
       sprintf(name_file, "%s%d\0", base_name,i);
       close(files[i]);
       remove(name_file);
