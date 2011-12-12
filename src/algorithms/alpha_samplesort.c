@@ -9,7 +9,7 @@
 #define min(a,b) ((a) - (b) < 1 ) ? (a) : (b)
 #define max(a,b) ((a) - (b) < 1 ) ? (b) : (a)
 
-void s_samplesort(int fd,int floor, off_t size,char *base_name){
+void s_samplesort(int fd, off_t size,char *base_name){
   int k;
   k = min(ceildiv(size,M),ceildiv(M,B));
 
@@ -84,11 +84,9 @@ void s_samplesort(int fd,int floor, off_t size,char *base_name){
   for(i = 0; i < k; i++){
 		sprintf(name_file, "%s%d\0", base_name,i);
     if(sizes[i] == 0){	  
-      sprintf(name_file, "%s%d\0", base_name,i);
       remove(name_file);
     }
     else if(sizes[i] <= M){
-			sprintf(name_file, "%s%d\0", base_name,i);
       if((files[i] = open(name_file, O_RDWR | O_CREAT, S_IRWXU|S_IRWXG|S_IRWXO))== -1){
         printf("%s%d fail1\n", base_name,i);
         perror("aca");
@@ -109,15 +107,14 @@ void s_samplesort(int fd,int floor, off_t size,char *base_name){
   qb_free(buff);
   
   for (i = 0; i < k; i++) {
+		sprintf(name_file, "%s%d\0", base_name,i);
     if (sizes[i] > M) {
-      sprintf(name_file, "%s%d\0", base_name,i);
       if((files[i] = open(name_file, O_RDWR | O_CREAT, S_IRWXU|S_IRWXG|S_IRWXO))== -1){
-        printf("buffer%d_%d fail1\n",floor, i);
+        printf("%s%d fail1\n",base_name, i);
         perror("aca");
         exit(1);
       }     
-      s_samplesort(files[i],floor+1,sizes[i],name_file);
-      sprintf(name_file, "%s%d\0", base_name,i);
+      s_samplesort(files[i],sizes[i],name_file);
       close(files[i]);
       remove(name_file);
     }
