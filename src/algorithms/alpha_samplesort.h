@@ -19,7 +19,7 @@
 #define B 128
 
 
-
+struct sort_results alpha_samplesort(int fd, off_t size,char *base_name,int k);
 
 void s_samplesort(int fd,off_t size,char *base_name,int k);
 

@@ -8,6 +8,18 @@
 #define min(a,b) ((a) - (b) < 1 ) ? (a) : (b)
 #define max(a,b) ((a) - (b) < 1 ) ? (b) : (a)
 
+
+struct sort_results results;
+
+
+struct sort_results alpha_samplesort(int fd, off_t size,char *base_name,int k){
+    
+    results.io_acc = 1;
+    results.io_rand = 0;
+    s_samplesort(fd, size, base_name,k);
+    return results;
+} 
+
 void s_samplesort(int fd, off_t size,char *base_name,int k){
   //int k;
   //k = min(ceildiv(size,M),ceildiv(M,B));
@@ -40,6 +52,7 @@ void s_samplesort(int fd, off_t size,char *base_name,int k){
       perror("aca");
       exit(1);
     }
+    results.io_rand++;
   }
   j=1;
   while(1){
@@ -48,6 +61,8 @@ void s_samplesort(int fd, off_t size,char *base_name,int k){
       perror("aca");
       exit(1);
     }
+    results.io_rand++;
+    results.io_acc+=ceildiv(buff->n_elems,B);
     
     if (qb_empty(buff)) break;
     
@@ -56,6 +71,8 @@ void s_samplesort(int fd, off_t size,char *base_name,int k){
       i = bucket(cur,keys,k+1);
       qb_enqueue(file_buff[i], cur);
       if(qb_full(file_buff[i])){
+        results.io_rand++;
+        results.io_acc+=ceildiv(file_buff[i]->n_elems,B);
       	sizes[i] += file_buff[i]->n_elems;
         if((ret = qb_flush(file_buff[i],files[i]))== -1){
           printf("%s%d fail3\n", base_name,i);
@@ -69,6 +86,8 @@ void s_samplesort(int fd, off_t size,char *base_name,int k){
   /* Pueden quedar restos en los bufs. Hay que vaciar todo */
   for (i = 0; i < k; i++) {
   	if (!qb_empty(file_buff[i])) {
+        results.io_rand++;
+        results.io_acc+=ceildiv(file_buff[i]->n_elems,B);
   	    sizes[i] += file_buff[i]->n_elems;
   	    qb_flush(file_buff[i], files[i]);
   	}
@@ -96,9 +115,14 @@ void s_samplesort(int fd, off_t size,char *base_name,int k){
 				perror("aca");
 				exit(1);
       }
+      results.io_rand++;
+      results.io_acc+=ceildiv(buff->n_elems,B);
       quicksort(buff);
       lseek(files[i],0,SEEK_SET);
+      results.io_rand++;
       qb_flush(buff,files[i]);
+      results.io_rand++;
+      results.io_acc+=ceildiv(buff->n_elems,B);
       close(files[i]);
     }
   }
@@ -112,7 +136,8 @@ void s_samplesort(int fd, off_t size,char *base_name,int k){
         printf("%s%d fail1\n",base_name, i);
         perror("aca");
         exit(1);
-      }     
+      }
+      results.io_rand++;    
       s_samplesort(files[i],sizes[i],name_file,k);
       close(files[i]);
       remove(name_file);
@@ -166,9 +191,12 @@ void select_keys(int *keys, int fd, off_t size, int k){
 					printf("fail4\n");
 					exit(1);
 				}
+        results.io_acc++;
+        results.io_rand++;
     }
 
     lseek(fd, 0, SEEK_SET);
+    results.io_rand++;
     alpha_quicksort(samples,(a+1)*k); 
     for(i=1;i < k;i++){
       keys[i] = samples[(a+1)*i];

@@ -6,6 +6,7 @@
 #include "../algorithms/alpha_samplesort.h"
 #include "../utils/test_utils.h"
 
+
 main(int argc, char **argv) {
     struct sort_results sr;
     int fd,k;
@@ -23,7 +24,7 @@ main(int argc, char **argv) {
 
     k = atoi(argv[3]);
 
-    sr = s_samplesort(fd, size,"",k);
+    sr = alpha_samplesort(fd, size,"tmp",k);
 
     printf("Total accesses: %lld\n", sr.io_acc);
     printf("Total random acc: %lld\n", sr.io_rand);

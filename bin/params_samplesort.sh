@@ -25,6 +25,7 @@ do
 
         rm test_file
         cp test_file.bak test_file
+        rm ./tmp*
 
     done
     rm test_file.bak
