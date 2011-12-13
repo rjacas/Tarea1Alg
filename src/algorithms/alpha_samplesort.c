@@ -82,7 +82,8 @@ void s_samplesort(int fd, off_t size,char *base_name,int k){
       }
     }     
   }
-  
+  close(fd);
+  remove(base_name);
   /* Pueden quedar restos en los bufs. Hay que vaciar todo */
   for (i = 0; i < k; i++) {
   	if (!qb_empty(file_buff[i])) {

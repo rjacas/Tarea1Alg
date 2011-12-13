@@ -21,7 +21,7 @@ main(int argc, char **argv) {
             buf[i] = random();
         }
 
-        i = 0;
+        i = 1;
         while ((ret = write(fd, &(buf[i]), BUF_SIZE - i)) > 0 && (BUF_SIZE - i) > 0) i += ret;
 
         total++;
