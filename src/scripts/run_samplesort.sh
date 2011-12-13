@@ -2,7 +2,7 @@
 
 k=4
 M=104857600
-max_n=2 #10
+max_n=10
 n_it=$((max_n-1))
 max_size=$((2**max_n * M))
 
@@ -12,12 +12,12 @@ max_size=$((2**max_n * M))
 #    mv ./test_file ./rand_src
 #fi
 
-rm -f test_file
+#rm -f test_file
 
 for i in `seq 1 $n_it`;
 do
 
-    test_size=$((4**i * M)) #2
+    test_size=$((2**i * M))
     
     #echo "Creating file of size $test_size bytes; mod = $((test_size % 512))"
     #offset=$((((RANDOM % 100) * (max_size - test_size))/51200))
