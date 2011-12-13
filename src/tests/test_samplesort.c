@@ -7,7 +7,6 @@
 #include "../utils/test_utils.h"
 
 #define N_ELEMS 24
-#define N 128
 main(int argc, char **argv) {
     int foo[N_ELEMS];
     int i, fd;
@@ -19,17 +18,20 @@ main(int argc, char **argv) {
         exit(1);
     }
 
-    fd = open(argv[1], O_RDONLY);
+    if((fd = open(argv[1], O_RDWR | O_CREAT, S_IRWXU|S_IRWXG|S_IRWXO))== -1){
+      perror("aca");
+      exit(1);
+    }
     
     //print_file_integers(fd);
 
-    close(fd);
+    //close(fd);
 
-    printf("Sorting...\n");
-    fd = open(argv[1], O_RDWR);
-    s_samplesort(fd, 0, N,"");
+    //printf("Sorting...\n");
+    //fd = open(argv[1], O_RDWR);
+    alpha_samplesort(fd, N,"", 2);
 
-    lseek(fd, 0, SEEK_SET);
+    //lseek(fd, 0, SEEK_SET);
     //print_file_integers(fd);
     close(fd);
 }
