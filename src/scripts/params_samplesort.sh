@@ -3,7 +3,7 @@ set -o verbose
 rm -f ./results*
 
 M=26214400
-N=$((16 * M)) #256
+N=$((256 * M))
 set -e
 
 for j in 1
