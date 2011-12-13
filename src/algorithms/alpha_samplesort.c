@@ -8,14 +8,14 @@
 #define min(a,b) ((a) - (b) < 1 ) ? (a) : (b)
 #define max(a,b) ((a) - (b) < 1 ) ? (b) : (a)
 
-
 struct sort_results results;
-
+char *curr_name;
 
 struct sort_results alpha_samplesort(int fd, off_t size,char *base_name,int k){
     
     results.io_acc = 1;
     results.io_rand = 0;
+    curr_name = "test_file";
     s_samplesort(fd, size, base_name,k);
     return results;
 } 
@@ -83,7 +83,7 @@ void s_samplesort(int fd, off_t size,char *base_name,int k){
     }     
   }
   close(fd);
-  remove(base_name);
+  remove(curr_name);
   /* Pueden quedar restos en los bufs. Hay que vaciar todo */
   for (i = 0; i < k; i++) {
   	if (!qb_empty(file_buff[i])) {
@@ -138,10 +138,9 @@ void s_samplesort(int fd, off_t size,char *base_name,int k){
         perror("aca");
         exit(1);
       }
-      results.io_rand++;    
+      results.io_rand++;
+      curr_name= name_file;    
       s_samplesort(files[i],sizes[i],name_file,k);
-      close(files[i]);
-      remove(name_file);
     }
   }
   free(sizes);   

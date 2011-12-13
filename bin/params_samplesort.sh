@@ -14,7 +14,7 @@ do
         cp test_file test_file.bak
     fi
 
-    for i in {2..4}
+    for i in {2 4 8}
     do
         echo "Testing with $N integers: $j; k = $i"
         echo "=====================" >> "results_$i"

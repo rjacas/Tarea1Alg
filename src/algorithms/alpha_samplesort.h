@@ -13,8 +13,8 @@
 #define M 26214400
 
 /* Amount of elements to be sorted */
-#define N 6710886400
-
+//#define N 6710886400
+#define N 805306368
 /* Amount of elements that fit in a disk sector */
 #define B 128
 
