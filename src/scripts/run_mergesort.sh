@@ -1,6 +1,6 @@
 #!/bin/bash
 
-k=11
+k=10
 M=104857600
 max_n=10
 n_it=$((max_n-1))
@@ -27,9 +27,12 @@ do
     dd if=./rand_src of=./test_file bs=512 skip=$offset count=$blocks
 
     touch aux
-
+    echo "=====================" >> "results"
+    echo "Testing with i=$i" >> "results"
+    echo "=====================" >> "results"
     echo "Testing with 2**$i * $M = $test_size bytes"
-    ./test_mergesort "test_file" $test_size aux $k
+    { time ./test_mergesort "test_file" $test_size aux $k >>results; } 2>>results
     rm -f test_file
     rm -f aux
+    echo >> results
 done
