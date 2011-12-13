@@ -4,30 +4,25 @@
 #include "../utils/priority_queue.h"
 #include "../utils/test_utils.h"
 
-#define ceildiv(a,b) ((a) + (b) - 1 ) / (b)
+#define ceildiv(a,b) (((a) + (b) - 1 ) / (b))
 #define min(a,b) ((a) - (b) < 1 ) ? (a) : (b)
 #define max(a,b) ((a) - (b) < 1 ) ? (b) : (a)
 
 struct sort_results results;
 char *curr_name;
 
-struct sort_results alpha_samplesort(int fd, off_t size,char *base_name,int k){
-    
+struct sort_results alpha_samplesort(int fd, off_t size,char *base_name,int t){    
     results.io_acc = 1;
     results.io_rand = 0;
     curr_name = "test_file";
-    s_samplesort(fd, size, base_name,k);
+    s_samplesort(fd, size, base_name,t);
     return results;
 } 
 
-void s_samplesort(int fd, off_t size,char *base_name,int k){
-  //int k;
-  //k = min(ceildiv(size,M),ceildiv(M,B));
+void s_samplesort(int fd, off_t size,char *base_name,int t){
+  int k;
+  k = t * min(ceildiv(size,M),ceildiv(M,B));
 
-  if(k < 1){
-    perror("this is going bad\n");
-    exit(1);
-  }
   struct queue_buf *buff;
   struct queue_buf **file_buff;
   int *files, *sizes, *keys;
@@ -40,7 +35,7 @@ void s_samplesort(int fd, off_t size,char *base_name,int k){
   sizes = (int *)malloc(sizeof(int)*k);
   keys = (int *)malloc(sizeof(int)*(k+1));    
   file_buff = (struct queue_buf **)malloc(sizeof(struct queue_buf *)*k);
-  select_keys(keys,fd,size,k);
+  select_keys(keys,fd,size,t);
   
 
   for(i = 0; i < k; i++){
@@ -125,6 +120,8 @@ void s_samplesort(int fd, off_t size,char *base_name,int k){
       results.io_rand++;
       results.io_acc+=ceildiv(buff->n_elems,B);
       close(files[i]);
+      //BORRAR!!!
+      remove(base_name);
     }
   }
   
@@ -140,7 +137,7 @@ void s_samplesort(int fd, off_t size,char *base_name,int k){
       }
       results.io_rand++;
       curr_name= name_file;    
-      s_samplesort(files[i],sizes[i],name_file,k);
+      s_samplesort(files[i],sizes[i],name_file,t);
     }
   }
   free(sizes);   
@@ -169,10 +166,11 @@ int bucket(int comp, int *key, off_t size){
 }
 
 
-void select_keys(int *keys, int fd, off_t size, int k){
-    int a,i,j,random1,random2;
+void select_keys(int *keys, int fd, off_t size, int t){
+    int a,i,j,k,random1,random2;
     off_t le_random,random_integer;
     int *samples;
+    k = t * min(ceildiv(size,M),ceildiv(M,B));
     a = ceildiv(ceil(log(k)),ceil(log(2)));
 
     samples = (int*)malloc(sizeof(int)*((a+1)*k));

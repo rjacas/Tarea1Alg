@@ -6,14 +6,13 @@
 #include "../algorithms/alpha_samplesort.h"
 #include "../utils/test_utils.h"
 
-#define N_ELEMS 24
 main(int argc, char **argv) {
     int foo[N_ELEMS];
-    int i, fd;
-    int size;
-    char *endptr = NULL;
+    int i,n,t, fd;
+    int size; 
+    char *c;
 
-    if (argc < 2) {
+    if (argc < 5) {
         printf("This test requires a file as the first argument\n");
         exit(1);
     }
@@ -23,13 +22,16 @@ main(int argc, char **argv) {
       exit(1);
     }
     
+    n = atoll(argv[2]);
+    t = atoi(argv[4]);
+    c = argv[3]; 
     //print_file_integers(fd);
 
     //close(fd);
 
     //printf("Sorting...\n");
     //fd = open(argv[1], O_RDWR);
-    alpha_samplesort(fd, N,"", 2);
+    alpha_samplesort(fd, n,c, 2);
 
     //lseek(fd, 0, SEEK_SET);
     //print_file_integers(fd);
