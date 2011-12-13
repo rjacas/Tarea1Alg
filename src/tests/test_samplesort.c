@@ -7,7 +7,6 @@
 #include "../utils/test_utils.h"
 
 main(int argc, char **argv) {
-    int foo[N_ELEMS];
     int i,n,t, fd;
     int size; 
     char *c;
@@ -31,7 +30,7 @@ main(int argc, char **argv) {
 
     //printf("Sorting...\n");
     //fd = open(argv[1], O_RDWR);
-    alpha_samplesort(fd, n,c, 2);
+    alpha_samplesort(fd, n,c, t);
 
     //lseek(fd, 0, SEEK_SET);
     //print_file_integers(fd);

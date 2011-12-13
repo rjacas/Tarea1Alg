@@ -13,15 +13,15 @@
 #define M 26214400
 
 /* Amount of elements to be sorted */
-#define N 6710886400
+//#define N 6710886400
 
 /* Amount of elements that fit in a disk sector */
 #define B 128
 
 
-struct sort_results alpha_samplesort(int fd, off_t size,char *base_name,int k);
+struct sort_results alpha_samplesort(int fd, off_t size,char *base_name,int t);
 
-void s_samplesort(int fd,off_t size,char *base_name,int k);
+void s_samplesort(int fd,off_t size,char *base_name, int t);
 
 /*calculates the keys for the current recursion using samples*/
 void select_keys(int *keys, int fd,off_t size, int k);

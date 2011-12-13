@@ -14,36 +14,38 @@ char *curr_name;
 struct sort_results alpha_samplesort(int fd, off_t size,char *base_name,int t){    
     results.io_acc = 1;
     results.io_rand = 0;
+    int k;
+    k = t * min(ceildiv(size,M),ceildiv(M,B));
     curr_name = "test_file";
-    s_samplesort(fd, size, base_name,t);
+    s_samplesort(fd, size, base_name, k);
     return results;
 } 
 
-void s_samplesort(int fd, off_t size,char *base_name,int t){
-  int k;
-  k = t * min(ceildiv(size,M),ceildiv(M,B));
-
+void s_samplesort(int fd, off_t size,char *base_name, int t){
   struct queue_buf *buff;
   struct queue_buf **file_buff;
   int *files, *sizes, *keys;
-  int i,j,cur,r,ret,ret1;
+  int i,j,cur,r,ret,ret1; 
   char name_file[500];
   
+   int k;
+   k = t * min(ceildiv(size,M),ceildiv(M,B));    
+
   r = 0;
   buff = qb_new(M);
   files = (int *)malloc(sizeof(int)*k);
   sizes = (int *)malloc(sizeof(int)*k);
   keys = (int *)malloc(sizeof(int)*(k+1));    
   file_buff = (struct queue_buf **)malloc(sizeof(struct queue_buf *)*k);
-  select_keys(keys,fd,size,t);
+  select_keys(keys,fd,size,k);
   
 
   for(i = 0; i < k; i++){
     file_buff[i] = qb_new(B);
 		sizes[i] = 0;
-    sprintf(name_file, "%s%d\0", base_name,i);
+    sprintf(name_file, "%s_%d\0", base_name,i);
     if((files[i] = open(name_file, O_RDWR | O_CREAT, S_IRWXU|S_IRWXG|S_IRWXO))== -1){
-      printf("%s%d fail1\n", base_name,i);
+      printf("%s_%d fail1\n", base_name,i);
       perror("aca");
       exit(1);
     }
@@ -52,7 +54,7 @@ void s_samplesort(int fd, off_t size,char *base_name,int t){
   j=1;
   while(1){
     if((ret1 = qb_refill(buff,fd))== -1){
-      printf("%s%d fail2\n", base_name,i);
+      printf("%s_%d fail2\n", base_name,i);
       perror("aca");
       exit(1);
     }
@@ -70,7 +72,7 @@ void s_samplesort(int fd, off_t size,char *base_name,int t){
         results.io_acc+=ceildiv(file_buff[i]->n_elems,B);
       	sizes[i] += file_buff[i]->n_elems;
         if((ret = qb_flush(file_buff[i],files[i]))== -1){
-          printf("%s%d fail3\n", base_name,i);
+          printf("%s_%d fail3\n", base_name,i);
           perror("aca");
           exit(1);
         }
@@ -96,18 +98,18 @@ void s_samplesort(int fd, off_t size,char *base_name,int t){
   free(keys);
   
   for(i = 0; i < k; i++){
-		sprintf(name_file, "%s%d\0", base_name,i);
+		sprintf(name_file, "%s_%d\0", base_name,i);
     if(sizes[i] == 0){	  
       remove(name_file);
     }
     else if(sizes[i] <= M){
       if((files[i] = open(name_file, O_RDWR | O_CREAT, S_IRWXU|S_IRWXG|S_IRWXO))== -1){
-        printf("%s%d fail1\n", base_name,i);
+        printf("%s_%d fail1\n", base_name,i);
         perror("aca");
         exit(1);
       } 
       if((ret1 = qb_refill(buff,files[i]))== -1){
-        printf("%s%d fail2\n", base_name,i);
+        printf("%s_%d fail2\n", base_name,i);
 				perror("aca");
 				exit(1);
       }
@@ -120,18 +122,16 @@ void s_samplesort(int fd, off_t size,char *base_name,int t){
       results.io_rand++;
       results.io_acc+=ceildiv(buff->n_elems,B);
       close(files[i]);
-      //BORRAR!!!
-      remove(base_name);
+      remove(name_file);
     }
   }
-  
   qb_free(buff);
   
   for (i = 0; i < k; i++) {
-		sprintf(name_file, "%s%d\0", base_name,i);
+		sprintf(name_file, "%s_%d\0", base_name,i);
     if (sizes[i] > M) {
       if((files[i] = open(name_file, O_RDWR | O_CREAT, S_IRWXU|S_IRWXG|S_IRWXO))== -1){
-        printf("%s%d fail1\n",base_name, i);
+        printf("%s_%d fail1\n",base_name, i);
         perror("aca");
         exit(1);
       }
@@ -166,11 +166,10 @@ int bucket(int comp, int *key, off_t size){
 }
 
 
-void select_keys(int *keys, int fd, off_t size, int t){
-    int a,i,j,k,random1,random2;
+void select_keys(int *keys, int fd, off_t size, int k){
+    int a,i,j,random1,random2;
     off_t le_random,random_integer;
     int *samples;
-    k = t * min(ceildiv(size,M),ceildiv(M,B));
     a = ceildiv(ceil(log(k)),ceil(log(2)));
 
     samples = (int*)malloc(sizeof(int)*((a+1)*k));
