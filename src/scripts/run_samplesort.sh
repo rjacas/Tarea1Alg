@@ -1,6 +1,6 @@
 #!/bin/bash
 
-k=4
+k=2
 M=104857600
 max_n=10
 n_it=$((max_n-1))
@@ -12,7 +12,7 @@ max_size=$((2**max_n * M))
 #    mv ./test_file ./rand_src
 #fi
 
-#rm -f test_file
+
 
 for i in `seq 1 $n_it`;
 do
@@ -29,7 +29,7 @@ do
     echo "Testing with i=$i" >> "results"
     echo "=====================" >> "results"
     echo "Testing with 2**$i * $M = $test_size bytes"
-    { time ./test_samplesort "test_file" test_size/4 "t" $k >>results; } 2>>results
+    { time ./test_samplesort "test_file" $((test_size/4)) "t" $k >>results; } 2>> results
 
     echo >> results
 done
