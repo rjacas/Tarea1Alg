@@ -114,7 +114,7 @@ void s_samplesort(int fd, off_t size,char *base_name, int t){
       results.io_rand++;
       results.io_acc+=ceildiv(buff->n_elems,B);
       quicksort(buff);
-      lseek(files[i],0,SEEK_SET);
+      lseek64(files[i],0,SEEK_SET);
       results.io_rand++;
       qb_flush(buff,files[i]);
       results.io_rand++;
@@ -181,7 +181,7 @@ void select_keys(int *keys, int fd, off_t size, int k){
         le_random = random1;
         le_random = le_random << 32 | random2;
         random_integer = le_random % (size/B);
-				lseek(fd, sizeof(int)*random_integer, SEEK_SET);
+				lseek64(fd, sizeof(int)*random_integer, SEEK_SET);
 				if((j = read(fd, (void *)&(samples[i]),sizeof(int)))== -1){
 					printf("fail4\n");
 					exit(1);
@@ -190,7 +190,7 @@ void select_keys(int *keys, int fd, off_t size, int k){
         results.io_rand++;
     }
 
-    lseek(fd, 0, SEEK_SET);
+    lseek64(fd, 0, SEEK_SET);
     results.io_rand++;
     alpha_quicksort(samples,(a+1)*k); 
     for(i=1;i < k;i++){
