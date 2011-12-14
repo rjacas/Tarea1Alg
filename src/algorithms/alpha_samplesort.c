@@ -14,10 +14,8 @@ char *curr_name;
 struct sort_results alpha_samplesort(int fd, off_t size,char *base_name,int t){    
     results.io_acc = 1;
     results.io_rand = 0;
-    int k;
-    k = t * min(ceildiv(size,M),ceildiv(M,B));
     curr_name = "test_file";
-    s_samplesort(fd, size, base_name, k);
+    s_samplesort(fd, size, base_name, t);
     return results;
 } 
 
