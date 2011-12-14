@@ -10,6 +10,7 @@
 main(int argc, char **argv) {
     struct sort_results sr;
     int fd,k;
+    char prefix[2];
     off_t size;
     char *endptr = NULL;
 
@@ -22,7 +23,9 @@ main(int argc, char **argv) {
     
     fd = open(argv[1], O_RDWR);
 
-    k = atoi(argv[3]);
+    k = atoi(argv[4]);
+    prefix[0] = argv[3][0];
+    prefix[1] = '\0';
 
     sr = alpha_samplesort(fd, size,"tmp",k);
 
