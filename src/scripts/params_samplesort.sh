@@ -25,5 +25,5 @@ do
         rm -f ./z*
 
     done
-    rm test_file.bak
+    rm -f test_file.bak
 done
