@@ -15,7 +15,7 @@ struct queue_buf *qb_new(int size) {
 }
 
 int qb_refill(struct queue_buf *q, int fd) {
-   int ret;
+   off_t ret;
 
    ret = read(fd, (void *)q->elems, (q->size)*sizeof(int));
 
@@ -25,7 +25,7 @@ int qb_refill(struct queue_buf *q, int fd) {
 }
 
 int qb_refill_max(struct queue_buf *q, int fd, int max_bytes) {
-   int ret;
+   off_t ret;
 
    if (max_bytes >= q->size * sizeof(int)) return qb_refill(q, fd);
 

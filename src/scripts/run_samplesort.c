@@ -27,7 +27,7 @@ main(int argc, char **argv) {
     prefix[0] = argv[3][0];
     prefix[1] = '\0';
 
-    sr = alpha_samplesort(fd, size,"tmp",k);
+    sr = alpha_samplesort(fd, size,prefix,k);
 
     printf("Total accesses: %lld\n", sr.io_acc);
     printf("Total random acc: %lld\n", sr.io_rand);

@@ -31,8 +31,9 @@ do
     echo "Testing with i=$i" >> "results"
     echo "=====================" >> "results"
     echo "Testing with 2**$i * $M = $test_size bytes"
-    { time ./test_mergesort "test_file" $test_size aux $k >>results; } 2>>results
+    { time ./test_mergesort "test_file" $((test_size/4)) aux $k >>results; } 2>>results
     rm -f test_file
     rm -f aux
     echo >> results
 done
+

@@ -81,7 +81,7 @@ void mergesort(int fd1, int fd2, int level, off_t start, off_t size) {
         parity = level % 2;
         fd_in = fd1;
         fd_out = fd2;
-        lseek(fd_in, start * sizeof(int), SEEK_SET);
+        lseek64(fd_in, start * sizeof(int), SEEK_SET);
         for (i = 0; i < k; i++) {
             if (q_size[i] > 0) {
                 qb_refill_max(bufs[i], fd_in, q_size[i] * sizeof(int));
@@ -110,7 +110,7 @@ void mergesort(int fd1, int fd2, int level, off_t start, off_t size) {
     if (new_size > min_size)  {
         for (i = 0; i < k ; i++) {
             if (q_size[i] > 0) {
-                lseek(fd_in, (start + i * new_size) * sizeof(int), SEEK_SET);
+                lseek64(fd_in, (start + i * new_size) * sizeof(int), SEEK_SET);
                 qb_refill_max(bufs[i], fd_in, q_size[i] * sizeof(int));
                 
                 results.io_acc += ceildiv(bufs[i]->n_elems, B * sizeof(int));
@@ -140,7 +140,7 @@ void mergesort(int fd1, int fd2, int level, off_t start, off_t size) {
                 done[qb_idx]++;
             } else {
                 if (done[qb_idx] < q_size[qb_idx]) {
-                    lseek(fd_in, (start + qb_idx * new_size + done[qb_idx]) * sizeof(int), SEEK_SET);  
+                    lseek64(fd_in, (start + qb_idx * new_size + done[qb_idx]) * sizeof(int), SEEK_SET);  
                     qb_refill_max(bufs[qb_idx], fd_in, (q_size[qb_idx] - done[qb_idx]) * sizeof(int));
                     results.io_acc += ceildiv(bufs[qb_idx]->n_elems, B * sizeof(int));
                     results.io_rand ++;
@@ -153,7 +153,7 @@ void mergesort(int fd1, int fd2, int level, off_t start, off_t size) {
 
             qb_enqueue(ex, value);
             if (qb_full(ex)) {
-                lseek(fd_out, (start + r) * sizeof(int), SEEK_SET);
+                lseek64(fd_out, (start + r) * sizeof(int), SEEK_SET);
                 written = qb_flush(ex, fd_out);
                 r += written/(sizeof(int)) ;
                 results.io_acc += ceildiv(written, B * sizeof(int));
@@ -164,7 +164,7 @@ void mergesort(int fd1, int fd2, int level, off_t start, off_t size) {
         /* If the priority queue is empty, then we have to flush
            the exit buf, whether it is full or not. */
         if (!qb_empty(ex)) {
-            lseek(fd_out, (start + r) * sizeof(int) , SEEK_SET);
+            lseek64(fd_out, (start + r) * sizeof(int) , SEEK_SET);
             written = qb_flush(ex, fd_out);
             r += written/(sizeof(int));
             results.io_acc += ceildiv(written, B * sizeof(int));
