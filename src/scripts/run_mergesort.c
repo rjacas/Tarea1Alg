@@ -25,8 +25,8 @@ main(int argc, char **argv) {
     k = atoi(argv[4]);
 
     sr = m_mergesort(fd1, fd2, k, size);
-    printf("Total accesses: %d\n", sr.io_acc);
-    printf("Total random acc: %d\n", sr.io_rand);
+    printf("Total accesses: %lld\n", sr.io_acc);
+    printf("Total random acc: %lld\n", sr.io_rand);
     close(fd1);
     close(fd2);
 }
