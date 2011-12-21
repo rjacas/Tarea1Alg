@@ -6,27 +6,25 @@
 #include "../algorithms/alpha_samplesort.h"
 #include "../utils/test_utils.h"
 
-
 main(int argc, char **argv) {
-    struct sort_results sr;
-    int fd,k;
-    off_t size;
-    char *endptr = NULL;
+    int i,n,t, fd;
+    int size; 
+    char *c;
 
-    if (argc < 4) {
-        printf("This test requires a file as the first argument, n_elems as the second and k as the third\n");
+    if (argc < 5) {
+        printf("This test requires a file as the first argument\n");
         exit(1);
     }
 
-    size = atoll(argv[2]);
+    if((fd = open(argv[1], O_RDWR | O_CREAT, S_IRWXU|S_IRWXG|S_IRWXO))== -1){
+      perror("aca");
+      exit(1);
+    }
     
-    fd = open(argv[1], O_RDWR);
+    n = atoll(argv[2]);
+		c = argv[3];
+    t = atoi(argv[4]);
+     
 
-    k = atoi(argv[3]);
-
-    sr = alpha_samplesort(fd, size,"tmp",k);
-
-    printf("Total accesses: %lld\n", sr.io_acc);
-    printf("Total random acc: %lld\n", sr.io_rand);
-    close(fd);
+    alpha_samplesort(fd, n, c, t);
 }

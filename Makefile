@@ -25,28 +25,28 @@ tests/test_priority_queue: src/tests/test_pq.c pq.o
 	gcc -g -DDEBUG pq.o src/tests/test_pq.c -o tests/test_priority_queue
 
 tests/test_queue_buf: src/tests/test_qb.c qb.o
-	gcc -g  -DDEBUG qb.o src/tests/test_qb.c -o tests/test_queue_buffer
+	gcc -g  -D_FILE_OFFSET_BITS=64 -DDEBUG qb.o src/tests/test_qb.c -o tests/test_queue_buffer
 
 tests/test_flush: src/tests/test_flush.c qb.o tu.o
-	gcc -g -DDEBUG tu.o qb.o src/tests/test_flush.c -o tests/test_flush
+	gcc -g -D_FILE_OFFSET_BITS=64 -DDEBUG tu.o qb.o src/tests/test_flush.c -o tests/test_flush
 
 tests/test_mixed: src/tests/test_mixed.c tu.o
 	gcc -g -D_FILE_OFFSET_BITS=64 -DDEBUG tu.o src/tests/test_mixed.c -o tests/test_mixed
 
 merge.o: src/algorithms/m_mergesort.c src/algorithms/m_mergesort.h tu.o qb.o pq.o
-	gcc -c tu.o qb.o pq.o src/algorithms/m_mergesort.c -o merge.o
+	gcc -c -D_FILE_OFFSET_BITS=64 tu.o qb.o pq.o src/algorithms/m_mergesort.c -o merge.o
 
 sample.o: src/algorithms/alpha_samplesort.c src/algorithms/alpha_samplesort.h tu.o qb.o pq.o
-	gcc -c tu.o qb.o pq.o src/algorithms/alpha_samplesort.c -lm -o sample.o
+	gcc -c -D_FILE_OFFSET_BITS=64 tu.o qb.o pq.o src/algorithms/alpha_samplesort.c -lm -o sample.o
 	
 tu.o: src/utils/test_utils.c src/utils/test_utils.h
-	gcc -c src/utils/test_utils.c -o tu.o
+	gcc -c -D_FILE_OFFSET_BITS=64 src/utils/test_utils.c -o tu.o
 
 su.o: src/utils/sort_utils.c src/utils/sort_utils.h qb.o
-	gcc -c src/utils/sort_utils.c qb.o -o su.o
+	gcc -c -D_FILE_OFFSET_BITS=64 src/utils/sort_utils.c qb.o -o su.o
 
 qb.o: src/utils/queue_buf.c src/utils/queue_buf.h
-	gcc -c src/utils/queue_buf.c -o qb.o
+	gcc -c -D_FILE_OFFSET_BITS=64 src/utils/queue_buf.c -o qb.o
 
 pq.o: src/utils/priority_queue.c src/utils/priority_queue.h
 	gcc -c src/utils/priority_queue.c -o pq.o
