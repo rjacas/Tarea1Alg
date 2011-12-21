@@ -22,17 +22,9 @@ main(int argc, char **argv) {
     }
     
     n = atoll(argv[2]);
+		c = argv[3];
     t = atoi(argv[4]);
-    c = argv[3]; 
-    //print_file_integers(fd);
+     
 
-    //close(fd);
-
-    //printf("Sorting...\n");
-    //fd = open(argv[1], O_RDWR);
-    alpha_samplesort(fd, n,c, t);
-
-    //lseek(fd, 0, SEEK_SET);
-    //print_file_integers(fd);
-    close(fd);
+    alpha_samplesort(fd, n, c, t);
 }
