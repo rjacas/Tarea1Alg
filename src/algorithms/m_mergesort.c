@@ -85,7 +85,7 @@ void mergesort(int fd1, int fd2, int level, off_t start, off_t size) {
         for (i = 0; i < k; i++) {
             if (q_size[i] > 0) {
                 qb_refill_max(bufs[i], fd_in, q_size[i] * sizeof(int));
-                results.io_acc += ceildiv(bufs[i]->n_elems, B * sizeof(int));
+                results.io_acc += ceildiv(bufs[i]->n_elems, B);
                 results.io_rand++;
                 quicksort(bufs[i]);
             }
@@ -113,7 +113,7 @@ void mergesort(int fd1, int fd2, int level, off_t start, off_t size) {
                 lseek64(fd_in, (start + i * new_size) * sizeof(int), SEEK_SET);
                 qb_refill_max(bufs[i], fd_in, q_size[i] * sizeof(int));
                 
-                results.io_acc += ceildiv(bufs[i]->n_elems, B * sizeof(int));
+                results.io_acc += ceildiv(bufs[i]->n_elems, B);
                 results.io_rand++;
 
                 if (!qb_empty(bufs[i])) {
@@ -142,7 +142,7 @@ void mergesort(int fd1, int fd2, int level, off_t start, off_t size) {
                 if (done[qb_idx] < q_size[qb_idx]) {
                     lseek64(fd_in, (start + qb_idx * new_size + done[qb_idx]) * sizeof(int), SEEK_SET);  
                     qb_refill_max(bufs[qb_idx], fd_in, (q_size[qb_idx] - done[qb_idx]) * sizeof(int));
-                    results.io_acc += ceildiv(bufs[qb_idx]->n_elems, B * sizeof(int));
+                    results.io_acc += ceildiv(bufs[qb_idx]->n_elems, B);
                     results.io_rand ++;
                     if (!qb_empty(bufs[qb_idx])) {
                         pq_insert(heap, qb_dequeue(bufs[qb_idx]), qb_idx);
@@ -156,7 +156,7 @@ void mergesort(int fd1, int fd2, int level, off_t start, off_t size) {
                 lseek64(fd_out, (start + r) * sizeof(int), SEEK_SET);
                 written = qb_flush(ex, fd_out);
                 r += written/(sizeof(int)) ;
-                results.io_acc += ceildiv(written, B * sizeof(int));
+                results.io_acc += ceildiv(written, B);
                 results.io_rand ++;
             }
 

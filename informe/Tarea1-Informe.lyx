@@ -88,46 +88,122 @@ Jorge Bahamonde, Ricardo Jacas y Víctor Rojas
 \end_layout
 
 \begin_layout Section
-Hipótesis
+Descripción del Problema
 \end_layout
 
 \begin_layout Standard
-Las hipótesis se explicarán según el algoritmo a utilizar y la instancia
- utilizada para este.
- Se presentan a continuación:
+Se analizarán dos algoritmos de ordenamiento en memoria secundaria, determinándo
+se sus parámetros óptimos para luego evaluar su rendimiento.
+ Los algoritmos a estudiar se presentan a continuación:
 \end_layout
 
-\begin_layout Itemize
-Algoritmo Mergesort Multiario: 
+\begin_layout Subsection
+Mergesort Multiario (adaptado a un modelo refinado para el almacenamiento
+ secundario)
 \end_layout
 
-\begin_deeper
-\begin_layout Itemize
-Instancias:
+\begin_layout Standard
+Este algoritmo se basa en un mergesort de 
+\emph on
+k
+\emph default
+ elementos, con el objetivo de realizar el mayor número posible de merges
+ para reducir la cantidad de niveles necesarios.
+ En un merge 
+\emph on
+k
+\emph default
+-ario, se hace merge a 
+\emph on
+k
+\emph default
+ secuencias dentro de una sola secuencia de salida.
+ Para el ordenamiento por paso, se utiliza una cola de prioridad, que entrega
+ en cada paso el elemento a ser agregado a la secuencia de salida.
+ Se necesita suficiente memoria interna para almacenar k secuencias de entrada
+ y una de salida; cuando una secuencia de entrada se vacia, se rellena y
+ se repite el proceso.
+ Si la cola de salida se llena, se escribe en memoria externa.
+ Para aprovechar el hecho de que las lecturas secuenciales se realizan con
+ mayor velocidad que las aleatorias, se tienen secuencias de entrada de
+ tamaño 
+\begin_inset Formula $l\times B$
+\end_inset
+
+ elementos, con 
+\begin_inset Formula $B$
+\end_inset
+
+ el número de elementos que pueden ser leídos de una vez en el dispositivo
+ de almacenamiento secundario.
 \end_layout
 
-\end_deeper
-\begin_layout Itemize
-Algortimo Samplesort: Descripción
+\begin_layout Subsection
+Samplesort
 \end_layout
 
-\begin_deeper
-\begin_layout Itemize
-Instancias:
+\begin_layout Standard
+Samplesort es un algoritmo de ordenamiento parecido a Quicksort.
+ Sin embargo, en vez de usar un solo pivote., este algoritmo usa 
+\emph on
+k 
+\emph default
+- 1 elementos para separar la entrada en buckets.
+ Los separadores son escogidos de forma que aseguren un tamaño máximo de
+ 
+\begin_inset Formula $n/k$
+\end_inset
+
+ para cada bucket.
+ Para la selección de los separadores se utiliza un entero 
+\emph on
+a
+\emph default
+, escogiéndose aleatoriamente 
+\begin_inset Formula $a(1+k)-1$
+\end_inset
+
+ muestras de la entrada.
+ Asi, se definen los separadores como 
+\begin_inset Formula $s_{i}=S[(a+1)i]$
+\end_inset
+
+ donde S es el conjunto de muestras, ordenado.
+ Los buckets son ordenados recursivamente, hasta que uno quepa por completo
+ en memoria, en cuyo caso se ordenan internamente.
+ Existen análisis que recomiendan un 
+\begin_inset Formula $k\inΘ(min(n/M,M/B))$
+\end_inset
+
+ buckets y una muestra de tamaño 
+\begin_inset Formula $a=O(log\ k)$
+\end_inset
+
+, para obtener buckets razonablemente llenos con buena probabilidad.
 \end_layout
 
-\end_deeper
+\begin_layout Section
+Hipótesis
+\end_layout
+
 \begin_layout Standard
 Se hipotetiza que mergesort escalará de una forma estable, ya que la optimalidad
  teórica de sus parámetros no se basa en el número de elementos a ordenar,
  sino que en parámetros de la unidad de almacenamiento secundario y del
  tamaño de la memoria principal.
- Se espera ver una mayor variabilidad para samplesort, ya que sus parámetros
+\end_layout
+
+\begin_layout Standard
+Se espera ver una mayor variabilidad para samplesort, ya que sus parámetros
  son más bien heurísticos.
  Sin embargo, también debería escalar de buena forma, ya que el parámetro
  que se variará es en realidad una constante de proporcionalidad; el verdadero
- parámetro interno (número de pivotes) se calcula dinámicamente por el algoritmo.
- Se espera también observar un overhead en samplesort, debido a la creación
+ parámetro interno (número de pivotes) se calcula dinámicamente por el algoritmo
+ para cada número de elementos a ordenar.
+\end_layout
+
+\begin_layout Standard
+Se espera también observar un overhead en samplesort, debido a la creación
  y borrado continuo de archivos por parte del algoritmo: esta interacción
  con el sistema de archivos debería traer un costo asociado.
 \end_layout
@@ -237,7 +313,9 @@ bloques, de modo de que
 \end_layout
 
 \begin_layout Standard
-\begin_inset Formula $t_{acceso}(t_{seek}+t_{latencia})$
+\noindent
+\align center
+\begin_inset Formula $\frac{t_{acceso}}{log(k)}+\frac{kB}{Mlog(k)}(t_{seek}+t_{latencia})$
 \end_inset
 
 
@@ -287,6 +365,11 @@ k
 t 
 \emph default
 un parámetro por determinar.
+ Se utilizó 
+\begin_inset Formula $a=t*logk$
+\end_inset
+
+ para mantener esta proporcionalidad.
  Se experimentó con valores para 
 \emph on
 t
@@ -314,7 +397,7 @@ Una vez determinados los parámetros ideales para cada algoritmo, se procedió
 \begin_inset Formula $i\in\{2...8\}$
 \end_inset
 
-, utilizándose siempre los parámetros determinados en la etapa anterior.
+, utilizándose siempre los parámetros escogidos al final de la etapa anterior.
  De la misma forma, se registraron los tiempos reales, de sistema y de usuario,
  así como el número de accesos a disco aleatorios y totales.
 \end_layout
@@ -324,12 +407,18 @@ Dificultades y Problemas Encontrados
 \end_layout
 
 \begin_layout Itemize
+Como ya se mencionó, el método de generación de datos aleatorios requirió
+ una reevaluación para determinar la mejor alternativa que cumpliera con
+ los requisitos necesarios.
+\end_layout
+
+\begin_layout Itemize
 Una implementación 
 \emph on
 naïve
 \emph default
  de los algoritmos utilizó los mecanismos usuales de manejo de archivo de
- la librería estandar de C.
+ la librería estandar de C sin mayor adaptación.
  No se notaron anomalías hasta el momento de utilizar archivos de tamaño
  mayor a 2 GB; en ese momento, las funciones de manejo de archivos comenzaron
  a presentar comportamientos inesperados, debido a que los offsets en los
@@ -432,16 +521,117 @@ Tamaño del sector: 512 bytes
 Resultados
 \end_layout
 
+\begin_layout Standard
+En la etapa de determinación de parámetros, se obtuvieron valores empíricamente
+ óptimos para los parámetros de cada algoritmo.
+ En el caso de mergesort, se determinó usar 10 secuencias de entrada; para
+ samplesort, el parámetro de proporcionalidad 
+\emph on
+t
+\emph default
+ se escogió como 2.
+ Se obtuvieron los siguientes resultados para la experimentación con parámetros
+ fijos:
+\end_layout
+
+\begin_layout Section
+Interpretación y Conclusiones
+\end_layout
+
+\begin_layout Standard
+Se aprecia, a primera vista, que los algoritmos escalan de la forma esperada.
+ Se aprecia que si bien los algoritmos exhiben tiempos similares, samplesort
+ realiza muchos más accesos aleatorios.
+ Es notable que esto no lo 
+\begin_inset Quotes eld
+\end_inset
+
+empeore
+\begin_inset Quotes erd
+\end_inset
+
+ en relación a mergesort, pero esto se puede explicar considerando que para
+ que los accesos secuenciales de mergesort sean tales, se requiere que no
+ existan otros procesos realizando peticiones al disco (de forma que el
+ brazo no se mueva del lugar de lectura anterior).
+ Las pruebas se realizaron en un sistema operativo en el que corren procesos
+ en 
+\emph on
+background
+\emph default
+, posiblemente interactuando con el almacenamiento secundario (por ejemplo,
+ procesos que realizan 
+\emph on
+logging
+\emph default
+).
+ 
+\end_layout
+
+\begin_layout Standard
+Se aprecia que el costo para samplesort, relativo al costo teórico esperado,
+ baja al crecer las instancias.
+ Esto puede deberse a que el overhead de crear archivos es más notorio para
+ instancias pequeñas.
+ Sin embargo, se considera que la principal razón es que el valor óptimo
+ para el parámetro 
+\emph on
+t 
+\emph default
+sea dependiente del tamaño de la instancia; en este caso, la curva indicaría
+ que el valor de 
+\emph on
+t
+\emph default
+ utilizado es mejor para instancias mayores, y que posiblemente existe un
+ mejor 
+\emph on
+t
+\emph default
+ para instancias de menor tamaño.
+ De todos modos, se hace necesario investigar más a fondo la relación entre
+ el tamaño de la instancia y la optimalidad de este parámetro para confirmar
+ esta nueva hipótesis.
+\end_layout
+
+\begin_layout Standard
+El hecho de que el escalamiento de mergesort sea irregular pudiera deberse
+ a que el 
+\emph on
+k
+\emph default
+ utilizado no es necesariamente el óptimo.
+ Una posible razón para esto es que para la determinación del óptimo teórico
+ (en torno al cual se buscó un óptimo empírico) se realizó en base a parámetros
+ nominales de la unidad de almacenamiento secundario.
+\end_layout
+
+\begin_layout Standard
+En conclusión, se puede decir que par ámetros que pudieran ser optimales
+ para un tamaño de instancia no necesariamente lo serán para otro tamaño,
+ especialmente en el caso de parámetros netamente heurísticos: aquellos
+ parámetros con una mejor base teórica para su optimalidad pueden verse
+ como más 
+\begin_inset Quotes eld
+\end_inset
+
+estables
+\begin_inset Quotes erd
+\end_inset
+
+ ante cambios de parámetros que no afectaran al óptimo teórico.
+\end_layout
+
+\begin_layout Section
+Anexos 
+\end_layout
+
 \begin_layout Subsection
 Determinación de parámetros
 \end_layout
 
 \begin_layout Subsubsection
 Mergesort
-\end_layout
-
-\begin_layout Standard
-Mergesort params con 6710886400 enteros
 \end_layout
 
 \begin_layout Standard
@@ -554,7 +744,7 @@ T.
 \begin_inset Text
 
 \begin_layout Plain Layout
-262145800
+1048583200
 \end_layout
 
 \end_inset
@@ -610,7 +800,7 @@ T.
 \begin_inset Text
 
 \begin_layout Plain Layout
-262151148
+1048604592
 \end_layout
 
 \end_inset
@@ -666,7 +856,7 @@ T.
 \begin_inset Text
 
 \begin_layout Plain Layout
-262150376
+1048601504
 \end_layout
 
 \end_inset
@@ -686,6 +876,14 @@ T.
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+Con estos valores, se determinó utilizar un valor de 
+\emph on
+k 
+\emph default
+igual a 10 para la experimentación posterior.
 \end_layout
 
 \begin_layout Subsubsection
@@ -936,17 +1134,25 @@ T.
 
 \end_layout
 
+\begin_layout Standard
+Con estos resultados, se determinó utilizar un valor de 
+\emph on
+t 
+\emph default
+igual a 2 para la experimentación posterior.
+\end_layout
+
 \begin_layout Subsection
 Experimentación con Parámetros Fijos
 \end_layout
 
 \begin_layout Subsubsection
-Mergesort
+Mergesort con k=10
 \end_layout
 
 \begin_layout Standard
 \begin_inset Tabular
-<lyxtabular version="3" rows="11" columns="6">
+<lyxtabular version="3" rows="9" columns="6">
 <features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="0">
 <column alignment="center" valignment="top" width="0">
@@ -1057,7 +1263,7 @@ T.
 \begin_inset Text
 
 \begin_layout Plain Layout
-1024000
+4096000
 \end_layout
 
 \end_inset
@@ -1116,7 +1322,7 @@ T.
 \begin_inset Text
 
 \begin_layout Plain Layout
-2048000
+8192000
 \end_layout
 
 \end_inset
@@ -1187,7 +1393,7 @@ T.
 \begin_inset Text
 
 \begin_layout Plain Layout
-4096000
+16384000
 \end_layout
 
 \end_inset
@@ -1258,7 +1464,7 @@ T.
 \begin_inset Text
 
 \begin_layout Plain Layout
-12288000
+49152000
 \end_layout
 
 \end_inset
@@ -1329,7 +1535,7 @@ T.
 \begin_inset Text
 
 \begin_layout Plain Layout
-24576000
+98304000
 \end_layout
 
 \end_inset
@@ -1400,7 +1606,7 @@ T.
 \begin_inset Text
 
 \begin_layout Plain Layout
-49152000
+196608000
 \end_layout
 
 \end_inset
@@ -1471,7 +1677,7 @@ T.
 \begin_inset Text
 
 \begin_layout Plain Layout
-131073400
+524293600
 \end_layout
 
 \end_inset
@@ -1487,7 +1693,7 @@ T.
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1511,7 +1717,7 @@ T.
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1520,7 +1726,7 @@ T.
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1529,7 +1735,7 @@ T.
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1538,123 +1744,11 @@ T.
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-262145800
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-21880
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-9
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
 <cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-10
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
+1048583200
 \end_layout
 
 \end_inset
@@ -1663,7 +1757,7 @@ T.
 \begin_inset Text
 
 \begin_layout Plain Layout
-
+21880
 \end_layout
 
 \end_inset
@@ -1677,12 +1771,12 @@ T.
 \end_layout
 
 \begin_layout Subsubsection
-Samplesort
+Samplesort con t=2
 \end_layout
 
 \begin_layout Standard
 \begin_inset Tabular
-<lyxtabular version="3" rows="11" columns="6">
+<lyxtabular version="3" rows="10" columns="6">
 <features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="0">
 <column alignment="center" valignment="top" width="0">
@@ -1695,7 +1789,7 @@ Samplesort
 \begin_inset Text
 
 \begin_layout Plain Layout
-Instancia
+N
 \end_layout
 
 \end_inset
@@ -2326,7 +2420,7 @@ T.
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -2351,7 +2445,7 @@ T.
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -2360,7 +2454,7 @@ T.
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -2369,7 +2463,7 @@ T.
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -2378,7 +2472,7 @@ T.
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -2387,67 +2481,11 @@ T.
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-185851036
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
 <cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-
+185851036
 \end_layout
 
 \end_inset
@@ -2458,56 +2496,6 @@ T.
 \end_inset
 
 
-\end_layout
-
-\begin_layout Section
-Interpretación y Conclusiones
-\end_layout
-
-\begin_layout Standard
-Se aprecia, a primera vista, que los algoritmos escalan de la forma esperada.
- Se aprecia que si bien los algoritmos exhiben tiempos similares, samplesort
- realiza muchos más accesos aleatorios.
- Es notable que esto no lo 
-\begin_inset Quotes eld
-\end_inset
-
-empeore
-\begin_inset Quotes erd
-\end_inset
-
- en relación a mergesort, pero esto se puede explicar considerando que para
- que los accesos secuenciales de mergesort sean tales, se requiere que no
- existan otros procesos realizando peticiones al disco (de forma que el
- brazo no se mueva del lugar de lectura anterior).
- Las pruebas se realizaron en un sistema operativo en el que corren procesos
- en 
-\emph on
-background
-\emph default
-, posiblemente interactuando con el almacenamiento secundario (por ejemplo,
- procesos que realizan 
-\emph on
-logging
-\emph default
-).
- 
-\end_layout
-
-\begin_layout Standard
-Se aprecia que el costo para samplesort, relativo al costo teórico esperado,
- baja al crecer las instancias.
- Esto posiblemente se debe a que el overhead de crear archivos es más notorio
- para instancias pequeñas.
-\end_layout
-
-\begin_layout Standard
-El hecho de que el escalamiento de mergesort sea irregular pudiera deberse
- 
-\end_layout
-
-\begin_layout Section
-Anexos 
 \end_layout
 
 \end_body
