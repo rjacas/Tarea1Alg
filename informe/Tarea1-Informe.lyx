@@ -92,9 +92,10 @@ Descripción del Problema
 \end_layout
 
 \begin_layout Standard
-Se analizarán dos algoritmos de ordenamiento en memoria secundaria, determinándo
-se sus parámetros óptimos para luego evaluar su rendimiento.
- Los algoritmos a estudiar se presentan a continuación:
+Se analizarán dos implementaciones de algoritmos de ordenamiento en memoria
+ secundaria, determinándose sus parámetros óptimos para luego evaluar su
+ rendimiento.
+ Los algoritmos implementados se presentan a continuación:
 \end_layout
 
 \begin_layout Subsection
@@ -187,10 +188,10 @@ Hipótesis
 \end_layout
 
 \begin_layout Standard
-Se hipotetiza que mergesort escalará de una forma estable, ya que la optimalidad
- teórica de sus parámetros no se basa en el número de elementos a ordenar,
- sino que en parámetros de la unidad de almacenamiento secundario y del
- tamaño de la memoria principal.
+Se hipotetiza que la implementación de mergesort escalará de una forma estable,
+ ya que la optimalidad teórica de sus parámetros no se basa en el número
+ de elementos a ordenar, sino que en parámetros de la unidad de almacenamiento
+ secundario y del tamaño de la memoria principal.
 \end_layout
 
 \begin_layout Standard
@@ -541,19 +542,15 @@ Interpretación y Conclusiones
 \begin_layout Standard
 Se aprecia, a primera vista, que los algoritmos escalan de la forma esperada.
  Se aprecia que si bien los algoritmos exhiben tiempos similares, samplesort
- realiza muchos más accesos aleatorios.
- Es notable que esto no lo 
-\begin_inset Quotes eld
-\end_inset
-
-empeore
-\begin_inset Quotes erd
-\end_inset
-
- en relación a mergesort, pero esto se puede explicar considerando que para
- que los accesos secuenciales de mergesort sean tales, se requiere que no
- existan otros procesos realizando peticiones al disco (de forma que el
- brazo no se mueva del lugar de lectura anterior).
+ realiza muchos más accesos aleatorios, mientras que mergesort realiza muchos
+ más accesos totales (de los cuales una porción pequeña consiste en accesos
+ aleatorios).
+ Esto termina por balancear los algoritmos, obteniéndose rendimientos similares
+ en tiempo.
+ Es posible que mergesort pudiera ser aun más eficiente si se considera
+ que, para que los accesos secuenciales de mergesort sean tales, se requiere
+ que no existan otros procesos realizando peticiones al disco (de forma
+ que el brazo no se mueva del lugar de lectura anterior).
  Las pruebas se realizaron en un sistema operativo en el que corren procesos
  en 
 \emph on
@@ -566,6 +563,15 @@ logging
 \emph default
 ).
  
+\end_layout
+
+\begin_layout Standard
+Por otro lado, samplesort termina por utilizar mucho más tiempo de sistema
+ que mergesort, que pasa más tiempo en modo usuario.
+ Esto proviene del hecho de que la implementación samplesort utilizada interactú
+a mucho con el sistema de archivos, no sólo escribiendo y leyendo en éstos,
+ sino que creando y borrando archivos.
+ Esto involucra muchas más llamadas a sistema.
 \end_layout
 
 \begin_layout Standard
@@ -603,11 +609,12 @@ k
  utilizado no es necesariamente el óptimo.
  Una posible razón para esto es que para la determinación del óptimo teórico
  (en torno al cual se buscó un óptimo empírico) se realizó en base a parámetros
- nominales de la unidad de almacenamiento secundario.
+ nominales de la unidad de almacenamiento secundario, y que no se exploró
+ con la suficiente profundidad el espacio de parámetros.
 \end_layout
 
 \begin_layout Standard
-En conclusión, se puede decir que par ámetros que pudieran ser optimales
+En conclusión, se puede decir que parámetros que pudieran ser optimales
  para un tamaño de instancia no necesariamente lo serán para otro tamaño,
  especialmente en el caso de parámetros netamente heurísticos: aquellos
  parámetros con una mejor base teórica para su optimalidad pueden verse
@@ -620,6 +627,10 @@ estables
 \end_inset
 
  ante cambios de parámetros que no afectaran al óptimo teórico.
+ En este sentido, se confirma la hipótesis sobre la variabilidad en el comportam
+iento de samplesort al cambiarse el tamaño de instancia, notándose sin embargo
+ que mergesort presenta una variabilidad que debiera ser estudiada más a
+ fondo.
 \end_layout
 
 \begin_layout Section
