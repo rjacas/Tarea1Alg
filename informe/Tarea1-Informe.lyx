@@ -64,21 +64,6 @@
 
 \begin_body
 
-\begin_layout Standard
-\begin_inset Graphics
-	filename /home/vito/Descargas/LogoFCFM.jpg
-	lyxscale 50
-	BoundingBox 0bp 0bp 529bp 172bp
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Departamento de Ciencias de la Computación
-\end_layout
-
 \begin_layout Title
 Tarea 1: Ordenamiento en Memoria Secundaria
 \end_layout
@@ -173,7 +158,7 @@ a
  Los buckets son ordenados recursivamente, hasta que uno quepa por completo
  en memoria, en cuyo caso se ordenan internamente.
  Existen análisis que recomiendan un 
-\begin_inset Formula $k\inΘ(min(n/M,M/B))$
+\begin_inset Formula $k\in\Theta(min(n/M,M/B))$
 \end_inset
 
  buckets y una muestra de tamaño 
@@ -230,13 +215,13 @@ Para probar los algoritmos, se crearon archivos con datos aleatorios.
  requerida y el tiempo requerido para obtener las instancias.
  Un primer acercamiento se realizó a través de los archivos especiales de
  Unix, 
-\begin_inset Formula $\text{\mathtt{/dev/random}}$
-\end_inset
-
+\emph on
+/dev/random
+\emph default
  y 
-\begin_inset Formula $\text{\mathtt{/dev/urandom}}$
-\end_inset
-
+\emph on
+/dev/urandom
+\emph default
 .
  Sin embargo, se determinó que el primero era insuficiente por volverse
  bloqueante ante falta de entropía (por lo que la generación de instancias
@@ -533,6 +518,44 @@ t
  se escogió como 2.
  Se obtuvieron los siguientes resultados para la experimentación con parámetros
  fijos:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename /home/vito/8vo semestre/Diseño y Análisis de algoritmos/Tarea1/results/graficos/treal.jpg
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Tiempo real de ejecución en cada instancia para ambos algoritmos.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename /home/vito/8vo semestre/Diseño y Análisis de algoritmos/Tarea1/results/graficos/taccesos.jpg
+	lyxscale 105
+	scale 50
+	clip
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Total de accesos a memoria secundaria por cada instancia para cada algoritmo.
 \end_layout
 
 \begin_layout Section
