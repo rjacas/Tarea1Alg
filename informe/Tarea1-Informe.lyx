@@ -98,7 +98,7 @@ Las hipótesis se explicarán según el algoritmo a utilizar y la instancia
 \end_layout
 
 \begin_layout Itemize
-Algoritmo Mergesort Multiario: Descripción
+Algoritmo Mergesort Multiario: 
 \end_layout
 
 \begin_deeper
@@ -117,6 +117,21 @@ Instancias:
 \end_layout
 
 \end_deeper
+\begin_layout Standard
+Se hipotetiza que mergesort escalará de una forma estable, ya que la optimalidad
+ teórica de sus parámetros no se basa en el número de elementos a ordenar,
+ sino que en parámetros de la unidad de almacenamiento secundario y del
+ tamaño de la memoria principal.
+ Se espera ver una mayor variabilidad para samplesort, ya que sus parámetros
+ son más bien heurísticos.
+ Sin embargo, también debería escalar de buena forma, ya que el parámetro
+ que se variará es en realidad una constante de proporcionalidad; el verdadero
+ parámetro interno (número de pivotes) se calcula dinámicamente por el algoritmo.
+ Se espera también observar un overhead en samplesort, debido a la creación
+ y borrado continuo de archivos por parte del algoritmo: esta interacción
+ con el sistema de archivos debería traer un costo asociado.
+\end_layout
+
 \begin_layout Section
 Diseño Experimental
 \end_layout
@@ -128,125 +143,219 @@ El lenguaje utilizado fue C.
  útiles, archivos para hacer pruebas, y los scripts para correr los algoritmos.
 \end_layout
 
-\begin_layout Standard
-Se pueden agregar más datos sobre los archivos.
+\begin_layout Subsection
+Generación de Instancias y Metodología
 \end_layout
 
 \begin_layout Standard
-Aquí se describen las instancias y otras cosas.
-\end_layout
+Para probar los algoritmos, se crearon archivos con datos aleatorios.
+ En este punto fue necesario poner atención a la calidad de la aleatoriedad
+ requerida y el tiempo requerido para obtener las instancias.
+ Un primer acercamiento se realizó a través de los archivos especiales de
+ Unix, 
+\begin_inset Formula $\text{\mathtt{/dev/random}}$
+\end_inset
 
-\begin_layout Labeling
-\labelwidthstring 00.00.0000
-1.
- En la implementación de mergesort y samplesort se añadieron variables globales
- para contar los accesos aleatorios y secuenciales I/O.
-\end_layout
-
-\begin_layout Labeling
-\labelwidthstring 00.00.0000
-2.
- Para conocer el mejor k para la aridad del mergesort, se probó con k =
- 10,11,12, ya que el optimo teórico calculado usando los parámetros del
- disco duro daba entre 10 y 11.
- Por restricciones de tiempo no se probó con más números.
-\end_layout
-
-\begin_layout Labeling
-\labelwidthstring 00.00.0000
-3.
- Para conocer el k óptimo en el samplesort, se parte de que 
-\begin_inset Formula $k=\Theta(min(n/M,M/B))$
+ y 
+\begin_inset Formula $\text{\mathtt{/dev/urandom}}$
 \end_inset
 
 .
- Como es theta de aquella expresión, significa que existe un parámetro 
-\begin_inset Formula $t$
+ Sin embargo, se determinó que el primero era insuficiente por volverse
+ bloqueante ante falta de entropía (por lo que la generación de instancias
+ suficientemente grandes se volvería impráctica); el segundo se descartó
+ por disminuir la calidad de la aleatoriedad ante una falta de entropía.
+ Finalmente, se escogió utilizar el generador de números aleatorios random()
+ implementado en la biblioteca estándar de C, por ser una alternativa más
+ rápida al ser un generador lineal congruente; además, el alto periodo de
+ este generador es aceptable para los tamaños de archivo requeridos.
+\end_layout
+
+\begin_layout Standard
+Para generar instancias de forma más rápida, se generó primero un archivo
+ aleatorio de 100 GB; de este primer archivo se generaron las instancias
+ más pequeñas, copiando datos del archivo mayor a partir de offsets aleatorizado
+s.
+\end_layout
+
+\begin_layout Standard
+En lo que sigue de este informe, se considerará a N como el número de elementos
+ a ordenar; M, el número de estos elementos que caben en memoria principal;
+ y B, el número de elementos que caben en una unidad de transferencia entre
+ memoria principal y secundaria.
+ Para todos los experimentos se consideró un valor de M igual a 26214400
+ (es decir, 100MB de enteros de 32 bits).
+\end_layout
+
+\begin_layout Subsection
+Determinación de Parámetros
+\end_layout
+
+\begin_layout Standard
+Se comenzó por determinar los parámetros adecuados para cada algoritmo.
+ En el caso de mergesort, se determinó la mejor aridad posible; para samplesort,
+ se determinó el mejor número de pre-pivotes a escoger.
+ Para esto, se realizaron ejecuciones con una cantidad fija de elementos,
+ utilizándose 
+\begin_inset Formula $N=256\times M$
 \end_inset
 
- que multiplica a 
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
+.
+ En ambos casos se utilizaron como referencia resultados teóricos para estos
+ parámetros.
+ Para cada ejecución se registró el tiempo real, tiempo de sistema, tiempo
+ de usuario y número de accesos a disco totales y aleatorios.
+\end_layout
 
-\begin_inset Formula $min(n/M,M/B)$
+\begin_layout Subsubsection
+Mergesort Multiario
+\end_layout
+
+\begin_layout Standard
+Para el mergesort multiario, se tiene como resultado teórico (en un modelo
+ refinado para el almacenamiento externo) que debieran utilizarse 
+\emph on
+k
+\emph default
+ colas de largo 
+\emph on
+l 
+\emph default
+bloques, de modo de que 
+\begin_inset Formula $k\times l\leq m$
 \end_inset
 
-, por lo que se probó con distintos valores de 
-\begin_inset Formula $t$
+, el número de bloques que caben en memoria principal.
+ Se utilizó 
+\begin_inset Formula $k\times l=m$
 \end_inset
 
-, para encontrar el 
+, con el objetivo de aprovechar al máximo la memoria disponible y disminuir
+ los accesos a disco.
+ En este caso, el costo teórico del proceso se vuelve proporcional a la
+ siguiente expresión:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $t_{acceso}(t_{seek}+t_{latencia})$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Para el disco utilizado, la minimización de esta cantidad con respecto a
+ 
+\emph on
+k
+\emph default
+ entregó un valor teóricamente óptimo entre 10 y 11.
+ Por esto, se realizaron pruebas para mergesort con valores para 
+\emph on
+k 
+\emph default
+de 10, 11 y 12.
+ No se realizaron pruebas para un rango más amplio debido a restricciones
+ de tiempo.
+\end_layout
+
+\begin_layout Subsubsection
+Samplesort
+\end_layout
+
+\begin_layout Standard
+Para samplesort, se partió del resultado conocido de que un buen 
 \begin_inset Formula $k$
 \end_inset
 
- más óptimo.
- Determinado el k, es posible determinar 
-\begin_inset Formula $a$
+ (el número de pivotes con los cuales dividir los datos a ordenar) debe
+ pertenecer a 
+\begin_inset Formula $\Theta(min(n/M,M/B))$
 \end_inset
 
- para la selección de los k-1 pivotes.
-\end_layout
-
-\begin_layout Labeling
-\labelwidthstring 00.00.0000
-4.
- Para generar los archivos que se usaron en cada instancia, para ordenarlos
- con los distintos algoritmos, se hizo mediante el siguiente sistema: 
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-Se generó un archivo con números random (con la función rand() de C) de
- 100GB.
- Luego para crear los más pequeños, simplemente se ingresa el tamaño que
- se desea en una función y esta función elige de forma aleatoria una posición
- de inicio dentro del archivo de 100GB, tal que desde allí se pueda leer
- y sacar tantos enteros como sean necesarios para la creación del nuevo
- archivo.
-\end_layout
-
-\end_deeper
-\begin_layout Standard
-Dificultades y problemas en implementación:
-\end_layout
-
-\begin_layout Itemize
-Inicialmente, para hacer pruebas pequeñas con los algoritmos, para probar
- la implementación, se usaban números enteros pequeños como tamaños, como
- N u otros.
- Pero al momento de probar con archivos grandes los enteros eran muy grandes,
- pudiendo desbordarse, por lo que se cambió el tipo de todas aquellas variables
- por 
-\shape italic
-off_t
-\shape default
 .
+ Por esto, se utilizó un valor para 
+\emph on
+k
+\emph default
+ igual a 
+\begin_inset Formula $t\times min(n/M,M/B)$
+\end_inset
+
+, con 
+\emph on
+t 
+\emph default
+un parámetro por determinar.
+ Se experimentó con valores para 
+\emph on
+t
+\emph default
+ de 1, 2 y 4, por considerarse estos valores que mantendrían a 
+\emph on
+k
+\emph default
+ en el orden de magnitud requerido.
+\end_layout
+
+\begin_layout Subsection
+Experimentación con Parámetros Fijos
+\end_layout
+
+\begin_layout Standard
+Una vez determinados los parámetros ideales para cada algoritmo, se procedió
+ a realizar ejecuciones de éstos utilizando diferentes números de elementos
+ a ordenar.
+ Se utilizaron archivos con 
+\begin_inset Formula $N=2^{i}M$
+\end_inset
+
+ elementos, para 
+\begin_inset Formula $i\in\{2...8\}$
+\end_inset
+
+, utilizándose siempre los parámetros determinados en la etapa anterior.
+ De la misma forma, se registraron los tiempos reales, de sistema y de usuario,
+ así como el número de accesos a disco aleatorios y totales.
+\end_layout
+
+\begin_layout Subsection
+Dificultades y Problemas Encontrados
 \end_layout
 
 \begin_layout Itemize
-En la implementación samplesort, hacer la división de los archivos no fue
- algo tan fácil, porque había que recordar el archivo que se estaba dividiendo,
- para mantener su nombre y así el orden (al nombre se le añade un número
- para especificar el número de hijo) y para después eliminar al padre, que
- ya no será necesario (o si no, el espacio necesario libre debería ser el
- doble más un resto(casi llegando al triple en el peor caso), lo que para
- la última instancia es demasiado) .
+Una implementación 
+\emph on
+naïve
+\emph default
+ de los algoritmos utilizó los mecanismos usuales de manejo de archivo de
+ la librería estandar de C.
+ No se notaron anomalías hasta el momento de utilizar archivos de tamaño
+ mayor a 2 GB; en ese momento, las funciones de manejo de archivos comenzaron
+ a presentar comportamientos inesperados, debido a que los offsets en los
+ archivos ya no podían ser representados como enteros de 32 bits.
+ De esta forma, se requirió investigar cómo manejar offsets de 64 bits,
+ utilizando las funciones y definiciones correctas y consistentes tanto
+ al momento de escribir el código como al momento de realizar la compilación
+ de los programas.
 \end_layout
 
 \begin_layout Itemize
-Cuando llegó el momento de trabajar con archivos de más de 2 GB se requirió
- investigar cómo manejar offsets de 64 bits en los archivos, para poder
- leer en cualquier parte de ellos y no solo hasta los 2GB com sería con
- offsets de 32bits.
+En la implementación de samplesort se volvió un desafío el realizar correctament
+e la división de los archivos, debido a que se hace necesario mantener una
+ buena nomenclatura de estos archivos.
+ De otro modo, se pierde el orden y la correspondencia entre los niveles
+ de recursión y las diferentes llamadas a la función de ordenamiento.
+ El resolver correctamente este problema permitió eliminar al 
+\begin_inset Quotes eld
+\end_inset
+
+archivo padre
+\begin_inset Quotes erd
+\end_inset
+
+ luego de generar la partición de éste, evitando generar un uso de disco
+ insatisfacible por la máquina utilizada.
 \end_layout
 
 \begin_layout Section
@@ -254,12 +363,13 @@ Descripción del Hardware
 \end_layout
 
 \begin_layout Standard
-Se utilizó una máquina virtual en el programa VirtualBox, con las siguientes
- características:
+Para todos los experimentos se utilizó una máquina virtual en el programa
+ VirtualBox, con las siguientes características:
 \end_layout
 
 \begin_layout Itemize
-Procesador Intel Core i5 2410M CPU @ 2.30 GHz (del host)
+Procesador Intel Core i5 2410M CPU @ 2.30 GHz (correspondiente a un procesador
+ del host)
 \end_layout
 
 \begin_layout Itemize
@@ -271,7 +381,7 @@ Memoria swap: 6036472k
 \end_layout
 
 \begin_layout Itemize
-Sistema Operativo: Ubuntu Server versión LTS 11.10
+Sistema Operativo: Ubuntu Server versión 11.10
 \end_layout
 
 \begin_layout Standard
@@ -279,7 +389,7 @@ Datos del Host:
 \end_layout
 
 \begin_layout Itemize
-Procesador Intel Core i5 2410M CPU @ 2.30 GHz
+Procesador Intel Core i5 2410M CPU @ 2.30 GHz (4 procesadores)
 \end_layout
 
 \begin_layout Itemize
@@ -324,6 +434,14 @@ Análisis
 
 \begin_layout Section
 Resultados
+\end_layout
+
+\begin_layout Subsection
+Determinación de parámetros
+\end_layout
+
+\begin_layout Subsubsection
+Mergesort
 \end_layout
 
 \begin_layout Standard
@@ -574,8 +692,264 @@ T.
 
 \end_layout
 
+\begin_layout Subsubsection
+Samplesort
+\end_layout
+
 \begin_layout Standard
-Mergesort instancias
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="6">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+t
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+T.
+ real [s]
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+T.
+ de usuario [s]
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+T.
+ de sistema [s]
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+#Total accesos
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+#accesos aleatorios
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+8684,824
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3969,824
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3777,764
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+237591842
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+92585536
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+7339,479
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3218,137
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3199,584
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+239552829
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+93566091
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+13288,239
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+6201,232
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+6151,504
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+238281095
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+92930203
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Gráficos
+\end_layout
+
+\begin_layout Subsection
+Experimentación con Parámetros Fijos
+\end_layout
+
+\begin_layout Subsubsection
+Mergesort
 \end_layout
 
 \begin_layout Standard
@@ -1214,8 +1588,8 @@ T.
 
 \end_layout
 
-\begin_layout Standard
-Samplesort instancias
+\begin_layout Subsubsection
+Samplesort
 \end_layout
 
 \begin_layout Standard
@@ -1852,258 +2226,6 @@ T.
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
-Samplesort params con 6710886400 enteros
-\end_layout
-
-\begin_layout Standard
-\begin_inset Tabular
-<lyxtabular version="3" rows="4" columns="6">
-<features tabularvalignment="middle">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<column alignment="center" valignment="top" width="0">
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-t
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-T.
- real [s]
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-T.
- de usuario [s]
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-T.
- de sistema [s]
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-#Total accesos
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-#accesos aleatorios
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-1
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-8684,824
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-3969,824
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-3777,764
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-237591842
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-92585536
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-2
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-7339,479
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-3218,137
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-3199,584
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-239552829
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-93566091
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-4
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-13288,239
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-6201,232
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-6151,504
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-238281095
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-92930203
-\end_layout
-
-\end_inset
-</cell>
-</row>
-</lyxtabular>
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Gráficos
 \end_layout
 
 \begin_layout Section
