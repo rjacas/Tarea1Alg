@@ -359,7 +359,7 @@ archivo padre
 \end_layout
 
 \begin_layout Section
-Descripción del Hardware
+Descripción del Hardware Utilizado
 \end_layout
 
 \begin_layout Standard
@@ -397,11 +397,11 @@ Memoria RAM: 6043752k
 \end_layout
 
 \begin_layout Itemize
-Memoria swap: 12408828k
+Memoria Swap: 12408828k
 \end_layout
 
 \begin_layout Itemize
-Sistema operativo: Debian testing (wheezy)
+Sistema Operativo: Debian testing (wheezy)
 \end_layout
 
 \begin_layout Standard
@@ -417,19 +417,15 @@ Tasa de transferencia 3Gbits/s
 \end_layout
 
 \begin_layout Itemize
-Tasa de latencia: 5,5 ms
+Tiempo de latencia: 5,5 ms
 \end_layout
 
 \begin_layout Itemize
-Tasa de seek: 12 ms
+Tiempo de seek: 12 ms
 \end_layout
 
 \begin_layout Itemize
 Tamaño del sector: 512 bytes
-\end_layout
-
-\begin_layout Section
-Análisis
 \end_layout
 
 \begin_layout Section
@@ -511,7 +507,7 @@ T.
 \begin_inset Text
 
 \begin_layout Plain Layout
-#accesos aleatorios
+#Accesos aleatorios
 \end_layout
 
 \end_inset
@@ -759,7 +755,7 @@ T.
 \begin_inset Text
 
 \begin_layout Plain Layout
-#accesos aleatorios
+#Accesos aleatorios
 \end_layout
 
 \end_inset
@@ -940,10 +936,6 @@ T.
 
 \end_layout
 
-\begin_layout Standard
-Gráficos
-\end_layout
-
 \begin_layout Subsection
 Experimentación con Parámetros Fijos
 \end_layout
@@ -967,7 +959,7 @@ Mergesort
 \begin_inset Text
 
 \begin_layout Plain Layout
-Instancia
+N
 \end_layout
 
 \end_inset
@@ -1015,7 +1007,7 @@ T.
 \begin_inset Text
 
 \begin_layout Plain Layout
-#accesos aleatorios
+#Accesos aleatorios
 \end_layout
 
 \end_inset
@@ -1026,7 +1018,10 @@ T.
 \begin_inset Text
 
 \begin_layout Plain Layout
-1
+\begin_inset Formula $2\text{¹}M$
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -1082,7 +1077,10 @@ T.
 \begin_inset Text
 
 \begin_layout Plain Layout
-2
+\begin_inset Formula $2\text{²}M$
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -1138,7 +1136,22 @@ T.
 \begin_inset Text
 
 \begin_layout Plain Layout
-3
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula $2\text{³}M$
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -1194,7 +1207,22 @@ T.
 \begin_inset Text
 
 \begin_layout Plain Layout
-4
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula $2\text{⁴}M$
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -1250,7 +1278,22 @@ T.
 \begin_inset Text
 
 \begin_layout Plain Layout
-5
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula $2\text{⁵}M$
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -1259,7 +1302,7 @@ T.
 \begin_inset Text
 
 \begin_layout Plain Layout
-2518,024
+1941,412
 \end_layout
 
 \end_inset
@@ -1268,7 +1311,7 @@ T.
 \begin_inset Text
 
 \begin_layout Plain Layout
-1388,999
+1082,092
 \end_layout
 
 \end_inset
@@ -1277,7 +1320,7 @@ T.
 \begin_inset Text
 
 \begin_layout Plain Layout
-650,289
+499,096
 \end_layout
 
 \end_inset
@@ -1306,7 +1349,22 @@ T.
 \begin_inset Text
 
 \begin_layout Plain Layout
-6
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula $2\text{⁶}M$
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -1362,7 +1420,22 @@ T.
 \begin_inset Text
 
 \begin_layout Plain Layout
-7
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula $2\text{⁷}M$
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -1418,7 +1491,22 @@ T.
 \begin_inset Text
 
 \begin_layout Plain Layout
-8
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula $2\text{⁸}M$
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -1655,7 +1743,7 @@ T.
 \begin_inset Text
 
 \begin_layout Plain Layout
-#accesos aleatorios
+#Accesos aleatorios
 \end_layout
 
 \end_inset
@@ -1666,7 +1754,23 @@ T.
 \begin_inset Text
 
 \begin_layout Plain Layout
-1
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+2
+\begin_inset Formula $\text{¹}M$
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -1722,7 +1826,23 @@ T.
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
 2
+\begin_inset Formula $\text{²}M$
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -1778,7 +1898,23 @@ T.
 \begin_inset Text
 
 \begin_layout Plain Layout
-3
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+2
+\begin_inset Formula $\text{³}M$
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -1834,7 +1970,23 @@ T.
 \begin_inset Text
 
 \begin_layout Plain Layout
-4
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+2
+\begin_inset Formula $\text{⁴}M$
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -1890,7 +2042,23 @@ T.
 \begin_inset Text
 
 \begin_layout Plain Layout
-5
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+2
+\begin_inset Formula $\text{⁵}M$
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -1946,7 +2114,23 @@ T.
 \begin_inset Text
 
 \begin_layout Plain Layout
-6
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+2
+\begin_inset Formula $\text{⁶}M$
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -2002,7 +2186,23 @@ T.
 \begin_inset Text
 
 \begin_layout Plain Layout
-7
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+2
+\begin_inset Formula $\text{⁷}M$
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -2058,7 +2258,23 @@ T.
 \begin_inset Text
 
 \begin_layout Plain Layout
-8
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+2
+\begin_inset Formula $\text{⁸}M$
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -2114,7 +2330,23 @@ T.
 \begin_inset Text
 
 \begin_layout Plain Layout
-9
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+2
+\begin_inset Formula $\text{⁹}M$
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -2229,15 +2461,53 @@ T.
 \end_layout
 
 \begin_layout Section
-Conclusiones
+Interpretación y Conclusiones
 \end_layout
 
 \begin_layout Standard
-Conclusión general y por instancia.
+Se aprecia, a primera vista, que los algoritmos escalan de la forma esperada.
+ Se aprecia que si bien los algoritmos exhiben tiempos similares, samplesort
+ realiza muchos más accesos aleatorios.
+ Es notable que esto no lo 
+\begin_inset Quotes eld
+\end_inset
+
+empeore
+\begin_inset Quotes erd
+\end_inset
+
+ en relación a mergesort, pero esto se puede explicar considerando que para
+ que los accesos secuenciales de mergesort sean tales, se requiere que no
+ existan otros procesos realizando peticiones al disco (de forma que el
+ brazo no se mueva del lugar de lectura anterior).
+ Las pruebas se realizaron en un sistema operativo en el que corren procesos
+ en 
+\emph on
+background
+\emph default
+, posiblemente interactuando con el almacenamiento secundario (por ejemplo,
+ procesos que realizan 
+\emph on
+logging
+\emph default
+).
+ 
+\end_layout
+
+\begin_layout Standard
+Se aprecia que el costo para samplesort, relativo al costo teórico esperado,
+ baja al crecer las instancias.
+ Esto posiblemente se debe a que el overhead de crear archivos es más notorio
+ para instancias pequeñas.
+\end_layout
+
+\begin_layout Standard
+El hecho de que el escalamiento de mergesort sea irregular pudiera deberse
+ 
 \end_layout
 
 \begin_layout Section
-Anexos
+Anexos 
 \end_layout
 
 \end_body
